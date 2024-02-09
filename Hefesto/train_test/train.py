@@ -1,7 +1,11 @@
 from matplotlib import pyplot as plt
 import numpy as np
-import pandas as pd
 import torch
+import torch
+from torch import optim
+from torch.nn import MSELoss
+from tqdm import tqdm
+from torch.utils.data import DataLoader
 from torch.optim import AdamW
 from Hefesto.models.model import Model
 from Hefesto.utils.utils import save_model
@@ -9,69 +13,41 @@ from Hefesto.utils.utils import save_model
 
 class Train:
 
-    def __init__(self, type_mode: Model):
-        self.type_model = type_mode
-        pass
+    def __init__(self, model: Model, device: torch.device):
+        self.model = model
+        self.device = device
+        self.model.to(self.device)
 
-    def __train(
-        self,
-        data: pd.DataFrame,
-        optimizer: AdamW,
-        n_epochs: int,
-        tolerance: int = None,
-    ) -> (Model, list):
-        loss_a = []
-        loss_function = torch.nn.MSELoss()
-        epoch = 0
+    def train_model(self, train_loader, epochs):
+        
+        self.model.train()
 
-        while True:
-            loss = 0
-            loss_ant = 1
+        # Define the optimizer
+        optimizer = optim.Adam(self.model.parameters(), lr=0.001)
+        # Define the loss function
+        loss_fn = MSELoss()
 
-            # Iterar sobre el DataFrame
-            for row in data.iterrows():
-                # Obtener los datos de la fila
-                x = row[1].values
+        for epoch in range(epochs):
+            epoch_loss = 0.0
 
-                # Convertir los datos a un tensor
-                x_tensor = torch.tensor(x)
+            for features, _ in tqdm(train_loader):
+                features = features.to(self.device)
+                
+                optimizer.zero_grad()
 
-                # Generar una muestra
-                x_gen = self.model(x_tensor)
+                # Forward pass: Compute predicted y by passing x to the model
+                y_pred = self.model(features)
 
-                # Calcular la pérdida
-                loss += loss_function(x_gen, x_tensor)
+                # Compute and print loss
+                loss = loss_fn(y_pred.squeeze(), features)
 
-            # Retropropagar la pérdida
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-            print(f"Época {epoch + 1}: pérdida = {loss.item()}")
-            loss_a.append(loss.item())
-            epoch += 1
-            if tolerance is not None and abs(loss.item() - loss_ant) < tolerance:
-                break
-            elif epoch == n_epochs:
-                break
-            loss_ant = loss.item()
+                # Zero gradients, perform a backward pass, and update the weights.
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
 
-        return loss_a
+                epoch_loss += loss.item()
 
-    def do_train(self, df_train: pd.DataFrame, epochs: int, tolerance: int) -> None:
-        self.model = self.type_model(df_train.shape[1], 128, 10)
-
-        optimizer = AdamW(self.model.parameters(), lr=0.001)
-
-        loss = self.__train(df_train, optimizer, epochs)
-
-        save_model("./save_models/model_Diffusion.pt", self.model)
-
-        ep = np.arange(1, epochs + 1)
-
-        self.__plot_epochs(ep, loss)
-
-    def __plot_epochs(self, epochs: list, losses: list) -> None:
-        plt.plot(epochs, losses)
-        plt.xlabel("Épocas")
-        plt.ylabel("Pérdida")
-        plt.show()
+            print(
+                f"Epoch [{epoch+1}/{epochs}], Loss: {epoch_loss/len(train_loader):.4f}"
+            )
