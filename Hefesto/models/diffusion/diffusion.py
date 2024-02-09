@@ -14,7 +14,7 @@ class DiffusionModel(Model):
             nn.Linear(input_dim, hidden_dim),
             nn.ReLU(),
             nn.BatchNorm1d(hidden_dim),
-            *self._make_transformer_layers(hidden_dim),
+            *self.__make_transformer_layers(hidden_dim),
             nn.Linear(hidden_dim, hidden_dim),
             nn.ReLU(),
             nn.BatchNorm1d(hidden_dim),
@@ -23,11 +23,11 @@ class DiffusionModel(Model):
             nn.Linear(hidden_dim, hidden_dim),
             nn.ReLU(),
             nn.BatchNorm1d(hidden_dim),
-            *self._make_transformer_layers(hidden_dim),
+            *self.__make_transformer_layers(hidden_dim),
             nn.Linear(hidden_dim, input_dim),
         )
 
-    def _make_transformer_layers(self, hidden_dim):
+    def __make_transformer_layers(self, hidden_dim):
         layers = []
         for _ in range(self.n_transformer_layers):
             transformer_layer = nn.TransformerEncoderLayer(

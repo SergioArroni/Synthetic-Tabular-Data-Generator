@@ -32,17 +32,18 @@ def main():
     val_loader = do_data_loader(df_val)
 
     epochs = 100
+    n_steps = 200
     tolerance = 0.001
 
-    # model = DiffusionModel(
-    #     input_dim=train_loader.dataset.features.shape[1], hidden_dim=128, n_steps=20
-    # )
+    model = DiffusionModel(
+        input_dim=train_loader.dataset.features.shape[1], hidden_dim=128, n_steps=n_steps
+    )
     # model = VAEModel(
     #     input_dim=train_loader.dataset.features.shape[1], hidden_dim=128, n_steps=20
     # )
-    model = PreTransformersModel(
-        input_dim=train_loader.dataset.features.shape[1], hidden_dim=128, n_steps=20
-    )
+    # model = PreTransformersModel(
+    #     input_dim=train_loader.dataset.features.shape[1], hidden_dim=128, n_steps=20
+    # )
     # model = GANModel
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
