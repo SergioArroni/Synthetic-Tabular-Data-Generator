@@ -5,7 +5,7 @@ from Hefesto.utils.preprocess import (
     split_data,
     do_data_loader,
 )
-from Hefesto.utils.utils import load_model, write_results
+from Hefesto.utils.utils import load_model, write_results, save_model
 from Hefesto.train_test.train import Train
 from Hefesto.train_test.test import Test
 from Hefesto.models.diffusion.diffusion import DiffusionModel
@@ -31,12 +31,19 @@ def main():
     test_loader = do_data_loader(df_test)
     val_loader = do_data_loader(df_val)
 
-    epochs = 100
-    n_steps = 200
+    epochs = 2
+    T = 200
+    betas = torch.linspace(0.001, 0.2, T)
     tolerance = 0.001
+    n_transformers = 2
+    input_dim = train_loader.dataset.features.shape[1]
+    hidden_dim = 128
 
     model = DiffusionModel(
-        input_dim=train_loader.dataset.features.shape[1], hidden_dim=128, n_steps=n_steps
+        input_dim=input_dim,
+        hidden_dim=hidden_dim,
+        T=T,
+        betas=betas,
     )
     # model = VAEModel(
     #     input_dim=train_loader.dataset.features.shape[1], hidden_dim=128, n_steps=20
@@ -50,13 +57,13 @@ def main():
 
     train = Train(model, device)
 
-    # trained_model = load_model(
-    #     "./save_models/model.pt", df_train.shape[1], DiffusionModel
-    # )
+    save_model("./save_models/model.pt", train.model)
 
-    train.train_model(train_loader, epochs)
+    train = load_model("./save_models/model.pt", model)
 
-    test = Test(train.model, test_loader, val_loader, seed)
+    # train.train_model(train_loader, epochs, T, betas)
+
+    test = Test(train, test_loader, val_loader, seed)
     good_ele, bad_ele = test.evaluate_model()
 
     write_results(epochs, good_ele, bad_ele, "./results/results.txt", m, model, seed)

@@ -5,9 +5,11 @@ from Hefesto.models.model import Model
 
 
 class DiffusionModel(Model):
-    def __init__(self, input_dim, hidden_dim, n_steps, n_transformer_layers=2):
-        super().__init__(input_dim, hidden_dim, n_steps)
+    def __init__(self, input_dim, hidden_dim, T, betas, n_transformer_layers=2):
+        super().__init__(input_dim, hidden_dim)
 
+        self.betas = betas
+        self.T = T
         self.n_transformer_layers = n_transformer_layers
 
         self.encoder = nn.Sequential(
@@ -31,15 +33,21 @@ class DiffusionModel(Model):
         layers = []
         for _ in range(self.n_transformer_layers):
             transformer_layer = nn.TransformerEncoderLayer(
-                d_model=hidden_dim, nhead=4, dim_feedforward=hidden_dim * 2, dropout=0.1, batch_first=True
+                d_model=hidden_dim,
+                nhead=4,
+                dim_feedforward=hidden_dim * 2,
+                dropout=0.1,
+                batch_first=True,
             )
             layers.append(nn.TransformerEncoder(transformer_layer, num_layers=1))
         return layers
 
     def forward(self, x: DataLoader):
         z = self.encoder(x)
-        for _ in range(self.n_steps):
-            z = z * 0.9 + torch.randn_like(z)
+        for t in range(self.T):
+            beta_t = self.betas[t]
+            noise = torch.randn_like(z) * torch.sqrt(beta_t)
+            z = torch.sqrt(1.0 - beta_t) * z + noise
             x = self.decoder(z)
         return x
 

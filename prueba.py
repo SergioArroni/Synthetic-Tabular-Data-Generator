@@ -52,6 +52,9 @@ def main():
 
     # Intenta reconstruir los datos originales a partir del ruido
     x_reconstructed = diffusion_model.reverse_diffusion_process(x_T)
+    
+    print(f"Reconstrucción: {torch.mean((x_reconstructed - train_loader.dataset.features[:1000])**2)}\n")
+    print(f"Original: {torch.mean((train_loader.dataset.features[:1000])**2)}\n")
 
     clf = IsolationForest(random_state=seed).fit(
         train_loader.dataset.features

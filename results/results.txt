@@ -1357,3 +1357,11 @@ Good Data Gen: 7751
 Bad Data Gen: 2249
 Acierto: 77.51%
 ---------------------------------------------------------------
+Seed: 42
+Model: DiffusionModel
+Epochs: 
+2
+Good Data Gen: 7751
+Bad Data Gen: 2249
+Acierto: 77.51%
+---------------------------------------------------------------

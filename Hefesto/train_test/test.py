@@ -20,10 +20,14 @@ class Test:
             self.val_loader.dataset.features
         )
 
+        gen_data = self.model.forward(self.test_loader.dataset.features)
+        print(self.test_loader[0])
+        print(gen_data[0])
+
         good_ele = []
         bad_ele = []
 
-        for ele in self.test_loader.dataset.features:
+        for ele in gen_data:
             if clf.predict([ele]) == 1:
                 good_ele.append(ele)
             else:

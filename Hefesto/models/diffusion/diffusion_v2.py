@@ -17,6 +17,7 @@ class DiffusionModel(nn.Module):
         self.model = nn.Sequential(
             nn.Linear(data_dim, 512),
             nn.ReLU(),
+            nn.BatchNorm1d(512),
             nn.Linear(512, data_dim),
         )
 
