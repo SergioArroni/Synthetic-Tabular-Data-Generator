@@ -5,8 +5,8 @@ from Hefesto.models.model import Model
 
 
 class GANModel(Model):
-    def __init__(self, input_dim, hidden_dim, n_steps, generator_dim=10):
-        super().__init__(input_dim, hidden_dim, n_steps)
+    def __init__(self, input_dim, hidden_dim, generator_dim=10):
+        super().__init__(input_dim, hidden_dim)
 
         self.generator = nn.Sequential(
             nn.Linear(input_dim, hidden_dim),

@@ -42,7 +42,7 @@ class DiffusionModel(Model):
             layers.append(nn.TransformerEncoder(transformer_layer, num_layers=1))
         return layers
 
-    def forward(self, x: DataLoader):
+    def forward(self, x: DataLoader) -> torch.Tensor:
         z = self.encoder(x)
         for t in range(self.T):
             beta_t = self.betas[t]

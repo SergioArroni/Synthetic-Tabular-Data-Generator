@@ -4,8 +4,8 @@ from Hefesto.models.model import Model
 from transformers import BertModel, BertTokenizer
 
 class TransformersModel(Model):
-    def __init__(self, input_dim, hidden_dim, n_steps):
-        super().__init__(input_dim, hidden_dim, n_steps)
+    def __init__(self, input_dim, hidden_dim):
+        super().__init__(input_dim, hidden_dim)
 
         # Cargar el modelo preentrenado y el tokenizador de BERT
         self.bert_model = BertModel.from_pretrained("bert-base-uncased")

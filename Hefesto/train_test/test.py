@@ -21,13 +21,14 @@ class Test:
         )
 
         gen_data = self.model.forward(self.test_loader.dataset.features)
-        print(self.test_loader[0])
+        print(self.test_loader.dataset.features[0])
         print(gen_data[0])
 
         good_ele = []
         bad_ele = []
 
         for ele in gen_data:
+            ele = ele.detach().numpy()
             if clf.predict([ele]) == 1:
                 good_ele.append(ele)
             else:

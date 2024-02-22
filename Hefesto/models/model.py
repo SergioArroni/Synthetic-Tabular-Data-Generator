@@ -1,4 +1,5 @@
 from torch import nn
+import torch
 
 
 class Model(nn.Module):
@@ -9,5 +10,5 @@ class Model(nn.Module):
         self.input_dim = input_dim
         self.hidden_dim = hidden_dim
 
-    def forward(self, x):
+    def forward(self, x) -> torch.Tensor:
         pass

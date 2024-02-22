@@ -6,8 +6,8 @@ from Hefesto.models.model import Model
 
 
 class VAEModel(Model):
-    def __init__(self, input_dim, hidden_dim, n_steps):
-        super().__init__(input_dim, hidden_dim, n_steps)
+    def __init__(self, input_dim, hidden_dim):
+        super().__init__(input_dim, hidden_dim)
         self.encoder = nn.Linear(input_dim, hidden_dim * 2)
         self.decoder = nn.Linear(hidden_dim, input_dim)
 
