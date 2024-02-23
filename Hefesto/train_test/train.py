@@ -32,7 +32,7 @@ class Train:
             epoch_val_loss = 0.0
 
             # Training phase
-            for features, _ in tqdm(train_loader):
+            for features in tqdm(train_loader.dataset.features):
                 features = features.to(self.device)
                 optimizer.zero_grad()
                 y_pred = self.model(features)
@@ -44,7 +44,7 @@ class Train:
             # Validation phase
             with torch.no_grad():
                 self.model.eval()  # Set model to evaluation mode
-                for features, _ in tqdm(val_loader):
+                for features in tqdm(val_loader.dataset.features):
                     features = features.to(self.device)
                     y_pred = self.model(features)
                     loss = loss_fn(y_pred.squeeze(), features)
@@ -65,6 +65,8 @@ class Train:
         plt.xlabel('Epochs')
         plt.ylabel('Loss')
         plt.legend()
+        plt.title(f'Train and Validation Loss for {self.model} model')
+        plt.grid()
         plt.savefig(f'./img/train/train_val_loss_{self.model}_{self.timestamp}.png')
         plt.show()
  

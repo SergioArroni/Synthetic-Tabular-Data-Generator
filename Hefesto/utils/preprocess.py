@@ -6,9 +6,10 @@ from torch.utils.data import DataLoader
 
 
 class TabularDataset(Dataset):
-    def __init__(self, features, labels):
+    def __init__(self, features, labels, columns=None):
         self.features = features
         self.labels = labels
+        self.columns = columns
 
     def __len__(self):
         return len(self.features)
@@ -17,15 +18,28 @@ class TabularDataset(Dataset):
         return self.features[idx], self.labels[idx]
 
 
-def do_data_loader(df, batch_size=32, shuffle=True):
+def do_data_loader(df, batch_size, columns, seed=0, shuffle=True):
+    """_summary_
+
+    Args:
+        df (_type_): _description_
+        batch_size (_type_): _description_
+        columns (_type_): _description_
+        seed (int, optional): _description_. Defaults to 0.
+        shuffle (bool, optional): _description_. Defaults to True.
+
+    Returns:
+        _type_: _description_
+    """
+    df = preprocess_data(df, seed)
     features, labels = df_to_tensor(df)
-    dataset = TabularDataset(features, labels)
+    dataset = TabularDataset(features, labels, columns)
     return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
 
 
 def df_to_tensor(df):
     # Assuming the last column is the target variable
-    features = df.iloc[:, :-1].values
+    features = df.values
     labels = df.iloc[:, -1].values
     features_tensor = torch.tensor(features, dtype=torch.float32)
     labels_tensor = torch.tensor(labels, dtype=torch.float32)

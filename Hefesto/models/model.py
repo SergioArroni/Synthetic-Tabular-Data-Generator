@@ -12,3 +12,4 @@ class Model(nn.Module):
 
     def forward(self, x) -> torch.Tensor:
         pass
+    

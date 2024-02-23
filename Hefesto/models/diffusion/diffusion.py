@@ -15,17 +15,14 @@ class DiffusionModel(Model):
         self.encoder = nn.Sequential(
             nn.Linear(input_dim, hidden_dim),
             nn.ReLU(),
-            nn.BatchNorm1d(hidden_dim),
-            *self.__make_transformer_layers(hidden_dim),
+            # *self.__make_transformer_layers(hidden_dim),
             nn.Linear(hidden_dim, hidden_dim),
             nn.ReLU(),
-            nn.BatchNorm1d(hidden_dim),
         )
         self.decoder = nn.Sequential(
             nn.Linear(hidden_dim, hidden_dim),
             nn.ReLU(),
-            nn.BatchNorm1d(hidden_dim),
-            *self.__make_transformer_layers(hidden_dim),
+            # *self.__make_transformer_layers(hidden_dim),
             nn.Linear(hidden_dim, input_dim),
         )
 
