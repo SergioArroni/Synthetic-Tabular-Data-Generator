@@ -5,24 +5,25 @@ from Hefesto.models.model import Model
 
 
 class DiffusionModel(Model):
-    def __init__(self, input_dim, hidden_dim, T, betas, n_transformer_layers=2):
+    def __init__(self, input_dim, hidden_dim, T, betas, device, n_transformer_layers=2):
         super().__init__(input_dim, hidden_dim)
 
         self.betas = betas
         self.T = T
         self.n_transformer_layers = n_transformer_layers
+        self.device = device
 
         self.encoder = nn.Sequential(
             nn.Linear(input_dim, hidden_dim),
             nn.ReLU(),
-            # *self.__make_transformer_layers(hidden_dim),
+            *self.__make_transformer_layers(hidden_dim),
             nn.Linear(hidden_dim, hidden_dim),
             nn.ReLU(),
         )
         self.decoder = nn.Sequential(
             nn.Linear(hidden_dim, hidden_dim),
             nn.ReLU(),
-            # *self.__make_transformer_layers(hidden_dim),
+            *self.__make_transformer_layers(hidden_dim),
             nn.Linear(hidden_dim, input_dim),
         )
 

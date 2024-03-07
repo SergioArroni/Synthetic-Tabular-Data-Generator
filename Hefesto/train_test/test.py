@@ -18,33 +18,33 @@ class Test:
         self.val_loader = val_loader
         self.seed = seed
         self.device = device
-        self.gen_data = torch.empty(0, 12).to(self.device)
+        tam = self.test_loader.dataset.features.shape[1]
+        self.gen_data = torch.empty(0, tam).to(self.device)
 
     def generate_data(self):
         self.model.eval()  # Asegúrate de que el modelo esté en modo de evaluación
 
         with torch.no_grad():  # No calcular gradientes
-            for ele in tqdm(self.test_loader.dataset.features):
-                ele = ele.to(self.device)
+            for feature, label in tqdm(self.test_loader):
+                input = feature.to(self.device)
                 
                 # print(ele)
                 
-                gen = self.model(ele).round()
-                gen = gen.unsqueeze(0)
+                gen = self.model(input).round()
                 # print(gen)
-                
-                # print(self.gen_data)
 
                 self.gen_data = torch.cat((self.gen_data, gen), 0)
-
+                
     def evaluate_model(self):
         clf = self.isolation_forest()
         self.generate_data()
         
         # print(self.gen_data)
+        self.gen_data = self.gen_data.cpu()
         
         columns = self.val_loader.dataset.columns
-        df = pd.DataFrame(self.gen_data, columns=columns, dtype="int")
+        df = pd.DataFrame(self.gen_data.numpy(), columns=columns, dtype="int")
+        df = df.drop("new_column", axis=1)
 
         plot_statistics(df, f"./img/stadistics/gendata/boxplot")
 
@@ -58,7 +58,7 @@ class Test:
         bad_ele = []
 
         for ele in self.gen_data:
-            ele = ele
+            ele = ele.cpu()
             if clf.predict([ele]) == 1:
                 good_ele.append(ele)
             else:

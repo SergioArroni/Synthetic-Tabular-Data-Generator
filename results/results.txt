@@ -1709,3 +1709,75 @@ Good Data Gen: 4983
 Bad Data Gen: 17
 Acierto: 99.66000000000001%
 ---------------------------------------------------------------
+Seed: 0
+Model: DiffusionModel
+Epochs: 
+20
+Good Data Gen: 0
+Bad Data Gen: 1000
+Acierto: 0.0%
+---------------------------------------------------------------
+Seed: 0
+Model: DiffusionModel
+Epochs: 
+200
+Good Data Gen: 3001
+Bad Data Gen: 1999
+Acierto: 60.019999999999996%
+---------------------------------------------------------------
+Seed: 0
+Model: DiffusionModel
+Epochs: 
+1000
+Good Data Gen: 3318
+Bad Data Gen: 1682
+Acierto: 66.36%
+---------------------------------------------------------------
+Seed: 0
+Model: DiffusionModel
+Epochs: 
+1000
+Good Data Gen: 46856
+Bad Data Gen: 3144
+Acierto: 93.71199999999999%
+---------------------------------------------------------------
+Seed: 0
+Model: DiffusionModel
+Epochs: 
+100
+Good Data Gen: 0
+Bad Data Gen: 5000
+Acierto: 0.0%
+---------------------------------------------------------------
+Seed: 0
+Model: DiffusionModel
+Epochs: 
+100
+Good Data Gen: 0
+Bad Data Gen: 5000
+Acierto: 0.0%
+---------------------------------------------------------------
+Seed: 0
+Model: DiffusionModel
+Epochs: 
+100
+Good Data Gen: 0
+Bad Data Gen: 5000
+Acierto: 0.0%
+---------------------------------------------------------------
+Seed: 0
+Model: DiffusionModel
+Epochs: 
+100
+Good Data Gen: 0
+Bad Data Gen: 5000
+Acierto: 0.0%
+---------------------------------------------------------------
+Seed: 0
+Model: DiffusionModel
+Epochs: 
+100
+Good Data Gen: 0
+Bad Data Gen: 5000
+Acierto: 0.0%
+---------------------------------------------------------------

@@ -15,16 +15,20 @@ from Hefesto.utils.utils import load_model, plot_statistics, save_model, write_r
 
 
 def main():
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    torch.cuda.set_device(device)
     seed = 0
     bach_size = 256
     df = read_data("data/cardio/cardio_train.csv")
     df = df.drop("id", axis=1)
+    df["new_column"] = 0
+    # print(df.head())
     plot_statistics(df, "./img/stadistics/cardio/boxplot")
     columnas = df.columns
 
-    n = 1000
+    n = 5000
     m = 5000
-    v = 1000
+    v = 5000
 
     df_train, df_test, df_val = split_data(df, n, m, v)
     df_train.to_csv("data/cardio/split/cardio_train.csv", sep=";", index=False)
@@ -33,7 +37,6 @@ def main():
     train_loader: DataLoader = do_data_loader(df_train, bach_size, columnas)
     test_loader: DataLoader = do_data_loader(df_test, bach_size, columnas)
     val_loader: DataLoader = do_data_loader(df_val, bach_size, columnas)
-    print(train_loader.dataset.features.shape)
 
     epochs = 200
     T = 200
@@ -49,6 +52,7 @@ def main():
         hidden_dim=hidden_dim,
         T=T,
         betas=betas,
+        device=device,
     )
     # model = VAEModel(
     #     input_dim=train_loader.dataset.features.shape[1], hidden_dim=128
@@ -58,22 +62,18 @@ def main():
     # )
     # model = GANModel
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    print("Using device: ", device)
-
     train = Train(model, device, timestamp)
 
-    model = load_model(
-        "./save_models/model_DiffusionModel_1708722945.8360732.pt", model
-    )
+    # model = load_model(
+    #     "./save_models/model_DiffusionModel_1709810144.782568.pt", model
+    # )
 
-    # train.train_model(train_loader, val_loader, epochs)
+    train.train_model(train_loader, val_loader, epochs)
 
     if train is Train:
         model = train.model
 
-    # save_model(f"./save_models/model_{model}_{timestamp}.pt", model)
+    save_model(f"./save_models/model_{model}_{timestamp}.pt", model)
 
     test = Test(model, test_loader, val_loader, seed, device)
     good_ele, bad_ele = test.evaluate_model()
