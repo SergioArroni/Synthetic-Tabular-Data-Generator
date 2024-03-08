@@ -2,12 +2,12 @@ import time
 
 import torch
 from torch.utils.data import DataLoader
+from Hefesto.models.VAE.VAE import VAEModel
 
 from Hefesto.models.diffusion.diffusion import DiffusionModel
 from Hefesto.models.GAN.GAN import GANModel
 from Hefesto.models.transformers.pre_transformers import PreTransformersModel
 from Hefesto.models.transformers.transformers import TransformersModel
-from Hefesto.models.VAE.VAE import VAEModel
 from Hefesto.train_test.test import Test
 from Hefesto.train_test.train import Train
 from Hefesto.utils.preprocess import do_data_loader, read_data, split_data
@@ -26,9 +26,9 @@ def main():
     plot_statistics(df, "./img/stadistics/cardio/boxplot")
     columnas = df.columns
 
-    n = 5000
-    m = 5000
-    v = 5000
+    n = 10000
+    m = 10000
+    v = 10000
 
     df_train, df_test, df_val = split_data(df, n, m, v)
     df_train.to_csv("data/cardio/split/cardio_train.csv", sep=";", index=False)
@@ -55,20 +55,20 @@ def main():
         device=device,
     )
     # model = VAEModel(
-    #     input_dim=train_loader.dataset.features.shape[1], hidden_dim=128
+    #     input_dim=train_loader.dataset.features.shape[1], hidden_dim=128, latent_dim=2
     # )
     # model = PreTransformersModel(
     #     input_dim=train_loader.dataset.features.shape[1], hidden_dim=128, n_steps=20
     # )
     # model = GANModel
 
-    train = Train(model, device, timestamp)
+    train = Train(model, device, timestamp, epochs)
 
     # model = load_model(
     #     "./save_models/model_DiffusionModel_1709810144.782568.pt", model
     # )
 
-    train.train_model(train_loader, val_loader, epochs)
+    train.train_model(train_loader, val_loader)
 
     if train is Train:
         model = train.model

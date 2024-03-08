@@ -12,59 +12,51 @@ from Hefesto.utils.utils import save_model
 
 class Train:
 
-    def __init__(self, model: Model, device: torch.device, timestamp: float) -> None:
+    def __init__(
+        self, model: Model, device: torch.device, timestamp: float, epochs: int
+    ) -> None:
         self.model = model
         self.device = device
         self.model.to(self.device)
         self.timestamp = timestamp
+        self.train_losses = []
+        self.val_losses = []
+        self.epochs = epochs
 
-    def train_model(self, train_loader, val_loader, epochs):
-        self.model.train()
+    def train_model(self, train_loader, val_loader) -> None:
 
         optimizer = optim.Adam(self.model.parameters(), lr=0.001)
-        loss_fn = MSELoss()
-        train_losses = []
-        val_losses = []
 
-        for epoch in range(epochs):
-            epoch_train_loss = 0.0
-            epoch_val_loss = 0.0
+        for epoch in range(self.epochs):
 
             # Training phase
-            for features, labels in tqdm(train_loader):
+            for features, _ in tqdm(train_loader):
                 inputs = features.to(self.device)
 
-                optimizer.zero_grad()
-
-                y_pred = self.model(inputs)
-                loss = loss_fn(y_pred.squeeze(), inputs)
-                loss.backward()
-                optimizer.step()
-                epoch_train_loss += loss.item()
+                self.model.train_model_gen(self.model, inputs, optimizer)
 
             # Validation phase
             with torch.no_grad():
-                self.model.eval()  # Set model to evaluation mode
-                for features, labels in tqdm(val_loader):
-                    inputs = features.to(self.device)
-                    y_pred = self.model(inputs)
-                    loss = loss_fn(y_pred.squeeze(), inputs)
-                    epoch_val_loss += loss.item()
+                for features, _ in tqdm(val_loader):
+                    self.model.train_model_gen(self.model, inputs, optimizer, False)
+
                 self.model.train()  # Set model back to train mode
 
-            avg_train_loss = epoch_train_loss / len(train_loader)
-            avg_val_loss = epoch_val_loss / len(val_loader)
+            avg_train_loss = self.model.epoch_train_loss / len(train_loader)
+            avg_val_loss = self.model.epoch_val_loss / len(val_loader)
             print(
-                f"Epoch [{epoch+1}/{epochs}], Train Loss: {avg_train_loss:.4f}, Val Loss: {avg_val_loss:.4f}"
+                f"Epoch [{epoch+1}/{self.epochs}], Train Loss: {avg_train_loss:.4f}, Val Loss: {avg_val_loss:.4f}"
             )
-            train_losses.append(avg_train_loss)
-            val_losses.append(avg_val_loss)
+            self.train_losses.append(avg_train_loss)
+            self.val_losses.append(avg_val_loss)
+        self.plotting()
 
-        # Plotting
-        epochs_range = np.arange(1, epochs + 1)
+    def plotting(self) -> None:
+        # Plotting the training and validation loss
+        epochs_range = np.arange(1, self.epochs + 1)
         plt.figure(figsize=(10, 5))
-        plt.plot(epochs_range, train_losses, label="Train Loss")
-        plt.plot(epochs_range, val_losses, label="Val Loss")
+        plt.plot(epochs_range, self.train_losses, label="Train Loss")
+        plt.plot(epochs_range, self.val_losses, label="Val Loss")
         plt.xlabel("Epochs")
         plt.ylabel("Loss")
         plt.legend()

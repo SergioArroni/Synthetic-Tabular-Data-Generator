@@ -22,17 +22,13 @@ class Test:
         self.gen_data = torch.empty(0, tam).to(self.device)
 
     def generate_data(self):
-        self.model.eval()  # Asegúrate de que el modelo esté en modo de evaluación
 
         with torch.no_grad():  # No calcular gradientes
-            for feature, label in tqdm(self.test_loader):
+            for feature, _ in tqdm(self.test_loader):
                 input = feature.to(self.device)
-                
-                # print(ele)
-                
-                gen = self.model(input).round()
-                # print(gen)
 
+                gen = self.model.test_model_gen(self.model, input)
+                
                 self.gen_data = torch.cat((self.gen_data, gen), 0)
                 
     def evaluate_model(self):
