@@ -6,8 +6,7 @@ from Hefesto.models.VAE.VAE import VAEModel
 
 from Hefesto.models.diffusion.diffusion import DiffusionModel
 from Hefesto.models.GAN.GAN import GANModel
-from Hefesto.models.transformers.pre_transformers import PreTransformersModel
-from Hefesto.models.transformers.transformers import TransformersModel
+from Hefesto.models.transformers.transformers import TransformerModel
 from Hefesto.train_test.test import Test
 from Hefesto.train_test.train import Train
 from Hefesto.utils.preprocess import do_data_loader, read_data, split_data
@@ -57,10 +56,12 @@ def main():
     # model = VAEModel(
     #     input_dim=train_loader.dataset.features.shape[1], hidden_dim=128, latent_dim=2
     # )
-    # model = PreTransformersModel(
-    #     input_dim=train_loader.dataset.features.shape[1], hidden_dim=128, n_steps=20
+    # model = GANModel(
+    #     input_dim=input_dim, hidden_dim=hidden_dim
     # )
-    # model = GANModel
+    # model = TransformerModel(
+    #     input_dim=input_dim, hidden_dim=hidden_dim
+    # )
 
     train = Train(model, device, timestamp, epochs)
 

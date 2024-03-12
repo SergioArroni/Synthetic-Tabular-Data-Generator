@@ -42,7 +42,7 @@ class VAEModel(Model):
         # Decode
         return self.decoder(z), mu, log_var
 
-    def train_model(self, model, input) -> torch.Tensor:
+    def train_model(self, model, input, optimizer) -> torch.Tensor:
         reconstruction, mu, log_var = model(input)
         loss = self.loss_fn(reconstruction, input)
         kl_div = -0.5 * torch.sum(1 + log_var - mu.pow(2) - (log_var.exp() + 1e-8))

@@ -13,7 +13,7 @@ class Model(nn.Module):
         self.epoch_train_loss = 0.0
         self.loss_fn = nn.MSELoss()
 
-    def train_model(self, model, input) -> torch.Tensor:
+    def train_model(self, model, input, optimizer) -> torch.Tensor:
         # Add your implementation here
         pass
 
@@ -26,7 +26,7 @@ class Model(nn.Module):
             model.eval()
 
         loss = self.train_model(
-            model, input
+            model, input, optimizer
         )  # Assign the result of the train_model method to the loss variable
         if train:
             print(loss)

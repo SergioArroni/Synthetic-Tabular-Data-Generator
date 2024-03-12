@@ -15,44 +15,44 @@ class DiffusionModel(Model):
 
         self.encoder = nn.Sequential(
             nn.Linear(input_dim, hidden_dim),
-            nn.ReLU(),
+            nn.LeakyReLU(),
+            nn.Dropout(0.1),
             nn.Linear(hidden_dim, hidden_dim),
-            nn.ReLU(),
+            nn.LeakyReLU(),
+            nn.Dropout(0.1),
         )
 
-        self.transformer_encoder_layer = nn.TransformerEncoderLayer(
-            d_model=hidden_dim, nhead=4
+        self.transformer = nn.TransformerEncoderLayer(
+            d_model=hidden_dim, nhead=4, device=self.device, batch_first=True
         )
-        self.transformer_encoder = nn.TransformerEncoder(
-            self.transformer_encoder_layer, num_layers=n_transformer_layers
-        )
-
-        self.encoder.apply(self.init_weights)
 
         self.decoder = nn.Sequential(
             nn.Linear(hidden_dim, hidden_dim),
-            nn.ReLU(),
+            nn.LeakyReLU(),
+            nn.Dropout(0.1),
             nn.Linear(hidden_dim, input_dim),
         )
 
-        self.decoder.apply(self.init_weights)
+        self.apply(self.init_weights)
 
     def forward(self, x: DataLoader) -> torch.Tensor:
+        x = x.to(self.device)
         z = self.encoder(x)
-        z = self.transformer_encoder(z)
+        z = self.transformer(z)
         for t in range(self.T):
             beta_t = self.betas[t]
-            noise = torch.randn_like(z) * torch.sqrt(beta_t)
-            z = torch.sqrt(1.0 - beta_t) * z + noise
-            x = self.decoder(z)
+            noise = torch.randn_like(z) * torch.sqrt(beta_t).to(self.device)
+            z = torch.sqrt(1.0 - beta_t).to(self.device) * z + noise
+        x = self.decoder(z)
         return x
 
-    def train_model(self, model, input) -> torch.Tensor:
+    def train_model(self, model, input, optimizer) -> torch.Tensor:
         y_pred = model(input)
         loss = self.loss_fn(y_pred.squeeze(), input)
         return loss
 
-    def init_weights(self, m):
+    @staticmethod
+    def init_weights(m):
         if isinstance(m, nn.Linear):
             torch.nn.init.xavier_uniform_(m.weight)
             m.bias.data.fill_(0.01)
