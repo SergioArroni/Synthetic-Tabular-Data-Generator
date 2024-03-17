@@ -11,9 +11,10 @@ def main():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     torch.cuda.set_device(device)
     df = read_data("data/cardio/cardio_train.csv")
-    matrix_correlation(df)
     df = df.drop("id", axis=1)
-    df["new_column"] = 0
+    matrix_correlation(df)
+    plot_statistics(df, f"./img/stadistics/cardio/boxplot")
+    # df["new_column"] = 0
 
     n = 20000
     m = 20000

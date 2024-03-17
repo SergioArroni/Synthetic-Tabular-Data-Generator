@@ -1917,3 +1917,19 @@ Good Data Gen: 14504
 Bad Data Gen: 5496
 Acierto: 72.52%
 ---------------------------------------------------------------
+Seed: 0
+Model: DiffusionModel
+Epochs: 
+400
+Good Data Gen: 18856
+Bad Data Gen: 1144
+Acierto: 94.28%
+---------------------------------------------------------------
+Seed: 0
+Model: VAE
+Epochs: 
+200
+Good Data Gen: 0
+Bad Data Gen: 20000
+Acierto: 0.0%
+---------------------------------------------------------------

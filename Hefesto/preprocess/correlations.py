@@ -25,4 +25,4 @@ def matrix_correlation(df: pd.DataFrame):
     plt.xticks(range(len(corr.columns)), corr.columns, rotation=90)
     plt.yticks(range(len(corr.columns)), corr.columns)
     plt.savefig("./img/correlation/correlation_matrix.png")
-    plt.show()
+    # plt.show()

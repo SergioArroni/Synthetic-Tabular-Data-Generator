@@ -30,28 +30,28 @@ def main():
     test_loader: DataLoader = do_data_loader(df_test, bach_size, columnas)
     val_loader: DataLoader = do_data_loader(df_val, bach_size, columnas)
 
-    epochs = 400
-    T = 300
+    epochs = 200
+    T = 200
     betas = torch.linspace(0.1, 0.9, T)
     input_dim = train_loader.dataset.features.shape[1]
-    hidden_dim = 256
+    hidden_dim = 128
     timestamp = time.time()
     alpha = 0.5
 
-    model = DiffusionModel(
-        input_dim=input_dim,
-        hidden_dim=hidden_dim,
-        T=T,
-        device=device,
-        alpha=alpha,
-        betas=betas,
-    )
-    # model = VAEModel(
-    #     input_dim=train_loader.dataset.features.shape[1],
-    #     hidden_dim=128,
-    #     latent_dim=2,
+    # model = DiffusionModel(
+    #     input_dim=input_dim,
+    #     hidden_dim=hidden_dim,
+    #     T=T,
     #     device=device,
+    #     alpha=alpha,
+    #     betas=betas,
     # )
+    model = VAEModel(
+        input_dim=train_loader.dataset.features.shape[1],
+        hidden_dim=128,
+        latent_dim=2,
+        device=device,
+    )
     # model = GANModel(
     #     input_dim=input_dim, hidden_dim=hidden_dim
     # )

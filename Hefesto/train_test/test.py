@@ -40,7 +40,7 @@ class Test:
         
         columns = self.val_loader.dataset.columns
         df = pd.DataFrame(self.gen_data.numpy(), columns=columns, dtype="int")
-        df = df.drop("new_column", axis=1)
+        # df = df.drop("new_column", axis=1)
 
         plot_statistics(df, f"./img/stadistics/gendata/boxplot")
 

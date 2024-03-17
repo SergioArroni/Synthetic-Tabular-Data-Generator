@@ -37,8 +37,8 @@ def write_results(
 def plot_statistics(df, path: str):
     # Crear un boxplot para cada atributo
     for i, column in enumerate(
-        df.columns[:-1], 1
-    ):  # Omitimos la última columna si es una etiqueta
+        df.columns, 1
+    ): 
         fig, ax = plt.subplots()
         df.boxplot(column, ax=ax)
 
