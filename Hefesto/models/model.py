@@ -4,7 +4,7 @@ import torch
 
 class Model(nn.Module):
 
-    def __init__(self, input_dim: int, hidden_dim: int):
+    def __init__(self, input_dim: int, hidden_dim: int, device: torch.device):
         super().__init__()
 
         self.input_dim = input_dim
@@ -12,6 +12,7 @@ class Model(nn.Module):
         self.epoch_val_loss = 0.0
         self.epoch_train_loss = 0.0
         self.loss_fn = nn.MSELoss()
+        self.device = device
 
     def train_model(self, model, input, optimizer) -> torch.Tensor:
         # Add your implementation here
@@ -32,6 +33,7 @@ class Model(nn.Module):
             print(loss)
             loss.backward()
             nn.utils.clip_grad_norm_(model.parameters(), max_norm=1)
+            # torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             optimizer.step()
             self.epoch_train_loss += loss.item()
         else:

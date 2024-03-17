@@ -5,13 +5,14 @@ from Hefesto.models.model import Model
 
 
 class DiffusionModel(Model):
-    def __init__(self, input_dim, hidden_dim, T, betas, device, n_transformer_layers=2):
-        super().__init__(input_dim, hidden_dim)
+    def __init__(self, input_dim, hidden_dim, T, device, alpha, betas=None):
+        super().__init__(input_dim, hidden_dim, device=device)
 
-        self.betas = betas
-        self.T = T
-        self.n_transformer_layers = n_transformer_layers
+        self.t_value = T
+        self.betas = self._init_betas() if betas is None else betas
         self.device = device
+        # Aquí 'alpha' es un hiperparámetro que determina cuánto afecta la std al ruido
+        self.alpha = alpha  # Este valor es un ejemplo; ajusta según necesites
 
         self.encoder = nn.Sequential(
             nn.Linear(input_dim, hidden_dim),
@@ -33,16 +34,25 @@ class DiffusionModel(Model):
             nn.Linear(hidden_dim, input_dim),
         )
 
-        self.apply(self.init_weights)
+        self.apply(self._init_weights)
 
     def forward(self, x: DataLoader) -> torch.Tensor:
         x = x.to(self.device)
         z = self.encoder(x)
         z = self.transformer(z)
-        for t in range(self.T):
+
+        for t in range(self.t_value):
             beta_t = self.betas[t]
-            noise = torch.randn_like(z) * torch.sqrt(beta_t).to(self.device)
+
+            # Calcular la desviación estándar de las activaciones de 'z'
+            std_z = torch.std(z)
+
+            # Ajustar el nivel de ruido basado en la desviación estándar
+            adjusted_noise_scale = torch.sqrt(beta_t * (1 + self.alpha * std_z))
+
+            noise = torch.randn_like(z) * adjusted_noise_scale.to(self.device)
             z = torch.sqrt(1.0 - beta_t).to(self.device) * z + noise
+
         x = self.decoder(z)
         return x
 
@@ -52,10 +62,19 @@ class DiffusionModel(Model):
         return loss
 
     @staticmethod
-    def init_weights(m):
+    def _init_weights(m):
         if isinstance(m, nn.Linear):
             torch.nn.init.xavier_uniform_(m.weight)
             m.bias.data.fill_(0.01)
+
+    def _init_betas(self):
+        scale = 5  # Ajusta esto según necesites para controlar la 'rapidez' de la curva
+        betas = torch.exp(
+            torch.linspace(-scale, scale, self.t_value)
+        )  # Curva exponencial
+        betas = (betas - betas.min()) / (betas.max() - betas.min())  # Normalización
+        betas = 0.1 + (0.9 - 0.1) * betas  # Ajuste al rango [0.1, 0.9]
+        return betas
 
     def __str__(self):
         return "DiffusionModel"
