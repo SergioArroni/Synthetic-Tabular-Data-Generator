@@ -15,23 +15,23 @@ class DiffusionModel(Model):
         self.alpha = alpha  # Este valor es un ejemplo; ajusta según necesites
 
         self.encoder = nn.Sequential(
-            nn.Linear(input_dim, hidden_dim),
+            nn.Linear(input_dim, 1024),
             nn.LeakyReLU(),
-            nn.Dropout(0.1),
-            nn.Linear(hidden_dim, hidden_dim),
+            nn.Dropout(0.4),
+            nn.Linear(1024, 512),
             nn.LeakyReLU(),
-            nn.Dropout(0.1),
+            nn.Dropout(0.4),
         )
 
         self.transformer = nn.TransformerEncoderLayer(
-            d_model=hidden_dim, nhead=4, device=self.device, batch_first=True
+            d_model=512, nhead=4, device=self.device, batch_first=True
         )
 
         self.decoder = nn.Sequential(
-            nn.Linear(hidden_dim, hidden_dim),
+            nn.Linear(512, 256),
             nn.LeakyReLU(),
-            nn.Dropout(0.1),
-            nn.Linear(hidden_dim, input_dim),
+            nn.Dropout(0.4),
+            nn.Linear(256, input_dim),
         )
 
         self.apply(self._init_weights)

@@ -51,7 +51,18 @@ def plot_statistics(df, path: str):
         # Añadir líneas horizontales para la media y la mediana
         ax.axhline(median, color="red", linestyle="-", label=f"Median: {median:.2f}")
         ax.axhline(mean, color="green", linestyle="--", label=f"Mean: {mean:.2f}")
-        ax.axhline(std, color="blue", linestyle="-.", label=f"Std: {std:.2f}")
+        # ax.axhline(std, color="blue", linestyle="-.", label=f"Std: {std:.2f}")
+        
+        ax.text(
+            0.95,
+            0.01,
+            f"Std: {std:.2f}",
+            verticalalignment="bottom",
+            horizontalalignment="right",
+            transform=ax.transAxes,
+            color="blue",
+            fontsize=10,
+        )
 
         # Mostrar la leyenda
         plt.legend()

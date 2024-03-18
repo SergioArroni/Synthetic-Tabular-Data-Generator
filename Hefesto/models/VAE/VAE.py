@@ -65,8 +65,8 @@ class VAEModel(Model):
     def train_model(self, model, input, optimizer) -> torch.Tensor:
         reconstruction, mu, log_var = model(input)
         loss = self.loss_fn(reconstruction.squeeze(), input)
-        # kl_divergence = -0.5 * torch.sum(1 + log_var - mu.pow(2) - log_var.exp())
-        # loss += kl_divergence
+        kl_divergence = -0.5 * torch.sum(1 + log_var - mu.pow(2) - log_var.exp())
+        loss += kl_divergence
         self.overall_loss += loss.item()
 
         return loss

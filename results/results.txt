@@ -1933,3 +1933,27 @@ Good Data Gen: 0
 Bad Data Gen: 20000
 Acierto: 0.0%
 ---------------------------------------------------------------
+Seed: 0
+Model: DiffusionModel
+Epochs: 
+200
+Good Data Gen: 18058
+Bad Data Gen: 1942
+Acierto: 90.29%
+---------------------------------------------------------------
+Seed: 0
+Model: DiffusionModel
+Epochs: 
+200
+Good Data Gen: 17270
+Bad Data Gen: 2730
+Acierto: 86.35000000000001%
+---------------------------------------------------------------
+Seed: 0
+Model: DiffusionModel
+Epochs: 
+200
+Good Data Gen: 19932
+Bad Data Gen: 68
+Acierto: 99.66000000000001%
+---------------------------------------------------------------
