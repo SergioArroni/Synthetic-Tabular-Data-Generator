@@ -133,22 +133,40 @@ class GANModel(Model):
         disc_fake_pred = disc(fake)
         gen_loss = criterion(disc_fake_pred, torch.ones_like(disc_fake_pred))
         return gen_loss
-    
+
     def train_model(self, train_loader, val_loader):
-        criterion = nn.BCEWithLogitsLoss()
-        n_epochs = 200
-        noise_dim = 96
-        num_images = 64
-        display_step = 500
-        device = self.device
 
-        self.generator.to(device)
-        self.discriminator.to(device)
+        # output_layer = decoder(encoder(input_layer)[2])
+        # vae = Model(input_layer, output_layer, name="autoencoder")
 
-        cur_step = 0
-        mean_generator_loss = 0
-        mean_discriminator_loss = 0
-        test_generator = True
+        # reconstruction_axis = (1, 2)
+        # if is_rgb:
+        #     reconstruction_axis = (1, 2, 3)
+
+        # reconstruction_loss = tf.reduce_mean(
+        #     1000.0 * tf.square(input_layer - output_layer), axis=reconstruction_axis
+        # )
+
+        # kl_loss = -0.5 * K.sum(
+        #     1 + z_log_var - K.square(z_mean) - K.exp(z_log_var), axis=1
+        # )
+
+        # vae_loss = tf.reduce_mean(reconstruction_loss + kl_loss)
+
+        # vae.add_loss(vae_loss)
+        # vae.add_metric(
+        #     tf.reduce_sum(
+        #         1000.0 * tf.square(input_layer - output_layer), axis=reconstruction_axis
+        #     ),
+        #     name="reconstruction_loss",
+        #     aggregation="mean",
+        # )
+        # vae.add_metric(kl_loss, name="kl_loss", aggregation="mean")
+        # vae.compile(optimizer="adam")
+
+        # https://medium.com/@morgan_lynch/generative-ai-with-variational-autoencoders-86d1926df6e8
+
+        return vae, reconstruction_loss
 
     def __str__(self):
         return "GANModel"
