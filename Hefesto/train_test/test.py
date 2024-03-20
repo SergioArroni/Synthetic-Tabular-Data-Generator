@@ -3,6 +3,7 @@ from torch.utils.data import DataLoader
 import pandas as pd
 from Hefesto.models.model import Model
 from Hefesto.utils.utils import save_data, plot_statistics
+from Hefesto.preprocess.preprocess import Preprocess
 import time
 import torch
 import matplotlib.pyplot as plt
@@ -42,7 +43,13 @@ class Test:
         df = pd.DataFrame(self.gen_data.numpy(), columns=columns, dtype="int")
         df = df.drop("new_column", axis=1)
 
-        plot_statistics(df, f"./img/stadistics/gendata/boxplot")
+        # plot_statistics(df, f"./img/stadistics/gendata/standar/boxplot")
+        
+        # prep = Preprocess(df)
+        # prep.des_scale()
+        # df = prep.df
+        
+        plot_statistics(df, f"./img/stadistics/gendata/bruto/boxplot")
 
         # save the generated data in a .csv with the atricbutes of the original data
         save_data(

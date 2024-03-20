@@ -160,5 +160,9 @@ cython_debug/
 #.idea/
 
 
-data/
-save_models/
+data/cardio/*.csv
+data/cardio/*.zip
+data/cardio/split/*.zip
+data/cardio/split/*.csv
+save_models/*
+scaler/*

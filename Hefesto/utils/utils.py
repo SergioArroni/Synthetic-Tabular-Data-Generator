@@ -27,7 +27,7 @@ def write_results(
     with open(path, "a") as a:
         a.write(f"Seed: {seed}\n")
         a.write(f"Model: {model}\n")
-        a.write(f"Epochs: \n{epochs}\n")
+        a.write(f"Epochs: {epochs}\n")
         a.write(f"Good Data Gen: {len(good_ele)}\n")
         a.write(f"Bad Data Gen: {len(bad_ele)}\n")
         a.write(f"Acierto: {(len(good_ele)/size)*100}%\n")

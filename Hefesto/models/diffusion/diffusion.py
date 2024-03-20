@@ -5,33 +5,39 @@ from Hefesto.models.model import Model
 
 
 class DiffusionModel(Model):
-    def __init__(self, input_dim, hidden_dim, T, device, alpha, betas=None):
-        super().__init__(input_dim, hidden_dim, device=device)
+    def __init__(
+        self, input_dim, hidden_dim, dropout, T, device, alpha, seed, betas=None
+    ):
+        super().__init__(
+            input_dim=input_dim, hidden_dim=hidden_dim, seed=seed, device=device
+        )
+        self.dropout = dropout
 
         self.t_value = T
         self.betas = self._init_betas() if betas is None else betas
         self.device = device
         # Aquí 'alpha' es un hiperparámetro que determina cuánto afecta la std al ruido
-        self.alpha = alpha  # Este valor es un ejemplo; ajusta según necesites
+        self.alpha = alpha
 
         self.encoder = nn.Sequential(
-            nn.Linear(input_dim, 1024),
+            nn.Linear(input_dim, 256),
             nn.LeakyReLU(),
-            nn.Dropout(0.4),
-            nn.Linear(1024, 512),
+            nn.Dropout(self.dropout),
+            nn.Linear(256, 128),
             nn.LeakyReLU(),
-            nn.Dropout(0.4),
+            nn.Dropout(self.dropout),
         )
 
-        self.transformer = nn.TransformerEncoderLayer(
-            d_model=512, nhead=4, device=self.device, batch_first=True
+        encoder_layers = nn.TransformerEncoderLayer(
+            d_model=128, nhead=4, dropout=self.dropout, batch_first=True
         )
+        self.transformer = nn.TransformerEncoder(encoder_layers, num_layers=4)
 
         self.decoder = nn.Sequential(
-            nn.Linear(512, 256),
+            nn.Linear(128, 128),
             nn.LeakyReLU(),
-            nn.Dropout(0.4),
-            nn.Linear(256, input_dim),
+            nn.Dropout(self.dropout),
+            nn.Linear(128, input_dim),
         )
 
         self.apply(self._init_weights)
@@ -56,10 +62,25 @@ class DiffusionModel(Model):
         x = self.decoder(z)
         return x
 
-    def train_model(self, model, input, optimizer) -> torch.Tensor:
+    def train_model(self, model, input, optimizer, train=True) -> None:
+
+        if train:
+            model.train()
+            optimizer.zero_grad()
+        else:
+            model.eval()
+
         y_pred = model(input)
         loss = self.loss_fn(y_pred.squeeze(), input)
-        return loss
+
+        # print(loss)
+        if train:
+            loss.backward()
+            nn.utils.clip_grad_norm_(model.parameters(), max_norm=1)
+            optimizer.step()
+            self.epoch_train_loss += loss.item()
+        else:
+            self.epoch_val_loss += loss.item()
 
     @staticmethod
     def _init_weights(m):
@@ -68,7 +89,7 @@ class DiffusionModel(Model):
             m.bias.data.fill_(0.01)
 
     def _init_betas(self):
-        scale = 5  # Ajusta esto según necesites para controlar la 'rapidez' de la curva
+        scale = 5
         betas = torch.exp(
             torch.linspace(-scale, scale, self.t_value)
         )  # Curva exponencial

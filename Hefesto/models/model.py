@@ -4,40 +4,22 @@ import torch
 
 class Model(nn.Module):
 
-    def __init__(self, input_dim: int, hidden_dim: int, device: torch.device):
+    def __init__(
+        self, input_dim: int, hidden_dim: int, seed: int, device: torch.device
+    ):
         super().__init__()
 
         self.input_dim = input_dim
+        self.seed = seed
         self.hidden_dim = hidden_dim
         self.epoch_val_loss = 0.0
         self.epoch_train_loss = 0.0
         self.loss_fn = nn.MSELoss()
         self.device = device
 
-    def train_model(self, model, input, optimizer) -> torch.Tensor:
-        # Add your implementation here
+    def train_model(self, model, input, optimizer, train=True) -> None:
+
         pass
-
-    def train_model_gen(self, model, input, optimizer, train=True):
-
-        if train:
-            model.train()
-            optimizer.zero_grad()
-        else:
-            model.eval()
-
-        loss = self.train_model(
-            model, input, optimizer
-        )  # Assign the result of the train_model method to the loss variable
-        if train:
-            print(loss)
-            loss.backward()
-            nn.utils.clip_grad_norm_(model.parameters(), max_norm=1)
-            # torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
-            optimizer.step()
-            self.epoch_train_loss += loss.item()
-        else:
-            self.epoch_val_loss += loss.item()
 
     def test_model_gen(self, model, input) -> torch.Tensor:
         model.eval()

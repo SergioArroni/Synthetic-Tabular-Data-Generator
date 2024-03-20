@@ -1,63 +1,46 @@
-from numpy import float32
 import pandas as pd
-import torch
-from torch.utils.data import Dataset
-from torch.utils.data import DataLoader
+from sklearn.preprocessing import StandardScaler, normalize
+from joblib import dump, load
 
 
-class TabularDataset(Dataset):
-    def __init__(self, features, labels, columns=None):
-        self.features = features
-        self.labels = labels
-        self.columns = columns
+class Preprocess:
+    def __init__(self, df: pd.DataFrame) -> None:
+        self.df = df
+        self.scaler = StandardScaler()
 
-    def __len__(self):
-        return len(self.features)
+    def normalize(self) -> None:
+        # Esta operación no es fácilmente reversible de una manera general
+        df_aux = normalize(self.df, norm="l2")
+        self.df = pd.DataFrame(df_aux, columns=self.df.columns)
 
-    def __getitem__(self, idx):
-        return self.features[idx], self.labels[idx]
+    def scaler_method(self) -> None:
+        df_aux = self.scaler.fit_transform(self.df)
+        self.df = pd.DataFrame(df_aux, columns=self.df.columns, dtype="int")
+        dump(self.scaler, "./scaler/scaler.joblib")
 
+    def outlayer(self):
+        Q1 = self.df.quantile(0.25)
+        Q4 = self.df.quantile(0.75)
+        IQR = Q4 - Q1
+        self.df = self.df[
+            ~((self.df < (Q1 - 1.5 * IQR)) | (self.df > (Q4 + 1.5 * IQR))).any(axis=1)
+        ]
 
-def do_data_loader(df, batch_size, columns, seed=0, shuffle=True):
-    """_summary_
+    def des_prep(self) -> None:
+        self.des_scale()
+        # No se incluye des_norm ya que la normalización L2 no tiene un proceso de inversión directo
 
-    Args:
-        df (_type_): _description_
-        batch_size (_type_): _description_
-        columns (_type_): _description_
-        seed (int, optional): _description_. Defaults to 0.
-        shuffle (bool, optional): _description_. Defaults to True.
+    def prep(self) -> None:
+        self.scaler_method()
+        # self.normalize()
 
-    Returns:
-        _type_: _description_
-    """
-    df = preprocess_data(df, seed)
-    features, labels = df_to_tensor(df)
-    dataset = TabularDataset(features, labels, columns)
-    return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
-
-
-def df_to_tensor(df):
-    # Assuming the last column is the target variable
-    features = df.values
-    labels = df.iloc[:, -1].values
-    features_tensor = torch.tensor(features, dtype=torch.float32)
-    labels_tensor = torch.tensor(labels, dtype=torch.float32)
-    return features_tensor, labels_tensor
-
-
-def read_data(file_path):
-    return pd.read_csv(file_path, sep=";")
-
-
-def preprocess_data(df, seed):
-    df = df.astype(float32)
-    df = df.sample(frac=1, random_state=seed)
-    return df
-
-
-def split_data(df, n, m, v):
-    df_train = df.iloc[:n]
-    df_test = df.iloc[n : n + m]
-    df_val = df.iloc[n + m : n + m + v]
-    return df_train, df_test, df_val
+    def des_scale(self) -> None:
+        # Asegurarse de que el escalador haya sido ajustado previamente
+        self.scaler = load("./scaler/scaler.joblib")
+        if hasattr(self.scaler, "mean_"):
+            df_aux = self.scaler.inverse_transform(
+                self.df
+            )  # Revertir la transformación
+            self.df = pd.DataFrame(df_aux, columns=self.df.columns, dtype="int")
+        else:
+            print("Scaler has not been fitted yet.")

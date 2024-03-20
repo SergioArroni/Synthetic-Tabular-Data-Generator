@@ -1,11 +1,9 @@
-import time
-
 import torch
-from torch.utils.data import DataLoader
 
-from Hefesto.preprocess.preprocess import do_data_loader, read_data, split_data
+from Hefesto.preprocess.load_data import read_data, split_data
 from Hefesto.preprocess.correlations import matrix_correlation
 from Hefesto.utils.utils import plot_statistics
+from Hefesto.preprocess.preprocess import Preprocess
 
 
 def main():
@@ -13,13 +11,19 @@ def main():
     torch.cuda.set_device(device)
     df = read_data("data/cardio/cardio_train.csv")
     df = df.drop("id", axis=1)
+    plot_statistics(df, f"./img/stadistics/cardio/bruto/boxplot")
+    # prep = Preprocess(df)
+    # prep.scaler_method()
+    # df = prep.df
+    
     matrix_correlation(df)
-    plot_statistics(df, f"./img/stadistics/cardio/boxplot")
+    # plot_statistics(df, f"./img/stadistics/cardio/standar/boxplot")
+
     df["new_column"] = 0
 
-    n = 10000
-    m = 10000
-    v = 10000
+    n = 5000
+    m = 5000
+    v = 5000
 
     df_train, df_test, df_val = split_data(df, n, m, v)
     df_train.to_csv("data/cardio/split/cardio_train.csv", sep=";", index=False)

@@ -33,9 +33,9 @@ class Discriminator(Model):
         self.discriminator = nn.Sequential(
             nn.Linear(input_dim, hidden_dim * 4),
             nn.LeakyReLU(0.2, inplace=True),
-            nn.Linear(input_dim * 4, hidden_dim * 2),
+            nn.Linear(hidden_dim * 4, hidden_dim * 2),
             nn.LeakyReLU(0.2, inplace=True),
-            nn.Linear(input_dim * 2, hidden_dim),
+            nn.Linear(hidden_dim * 2, hidden_dim),
             nn.LeakyReLU(0.2, inplace=True),
             nn.Linear(hidden_dim, 1),
         )
@@ -134,39 +134,47 @@ class GANModel(Model):
         gen_loss = criterion(disc_fake_pred, torch.ones_like(disc_fake_pred))
         return gen_loss
 
-    def train_model(self, train_loader, val_loader):
+    def train_model(self, model, input, optimizer, train=True):
+        if train:
+            model.train()
+            optimizer.zero_grad()
+        else:
+            model.eval()
+            
+        # Paso 1: Entrenar el Discriminador con datos reales y falsos
+        if train:
+            self.disc_opt.zero_grad()
 
-        # output_layer = decoder(encoder(input_layer)[2])
-        # vae = Model(input_layer, output_layer, name="autoencoder")
+        # 1.1 Entrenamiento con datos reales
+        real_pred = self.discriminator(input)
+        real_loss = self.loss_fn(real_pred, torch.ones_like(real_pred))
 
-        # reconstruction_axis = (1, 2)
-        # if is_rgb:
-        #     reconstruction_axis = (1, 2, 3)
+        # 1.2 Entrenamiento con datos falsos generados
+        noise = self.get_noise(input.size(0), self.input_dim, self.device)
+        fake_data = self.generator(noise)
+        fake_pred = self.discriminator(fake_data.detach())
+        fake_loss = self.loss_fn(fake_pred, torch.zeros_like(fake_pred))
 
-        # reconstruction_loss = tf.reduce_mean(
-        #     1000.0 * tf.square(input_layer - output_layer), axis=reconstruction_axis
-        # )
+        # 1.3 Actualizar Discriminador
+        disc_loss = (real_loss + fake_loss) / 2
+        disc_loss.backward()
+        self.disc_opt.step()
 
-        # kl_loss = -0.5 * K.sum(
-        #     1 + z_log_var - K.square(z_mean) - K.exp(z_log_var), axis=1
-        # )
+        # Paso 2: Entrenar el Generador (mejorar la falsificación)
+        self.gen_opt.zero_grad()
 
-        # vae_loss = tf.reduce_mean(reconstruction_loss + kl_loss)
+        # 2.1 Generar datos falsos y evaluarlos
+        fake_data = self.generator(
+            noise
+        )  # Reutilizamos el mismo ruido generado anteriormente
+        tricked_pred = self.discriminator(fake_data)
+        gen_loss = self.loss_fn(tricked_pred, torch.ones_like(tricked_pred))
 
-        # vae.add_loss(vae_loss)
-        # vae.add_metric(
-        #     tf.reduce_sum(
-        #         1000.0 * tf.square(input_layer - output_layer), axis=reconstruction_axis
-        #     ),
-        #     name="reconstruction_loss",
-        #     aggregation="mean",
-        # )
-        # vae.add_metric(kl_loss, name="kl_loss", aggregation="mean")
-        # vae.compile(optimizer="adam")
+        # 2.2 Actualizar Generador
+        gen_loss.backward()
+        self.gen_opt.step()
 
-        # https://medium.com/@morgan_lynch/generative-ai-with-variational-autoencoders-86d1926df6e8
-
-        return vae, reconstruction_loss
+        return disc_loss.item(), gen_loss.item()
 
     def __str__(self):
         return "GANModel"

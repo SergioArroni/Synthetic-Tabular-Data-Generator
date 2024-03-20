@@ -33,12 +33,12 @@ class Train:
             for features, _ in tqdm(train_loader):
                 inputs = features.to(self.device)
 
-                self.model.train_model_gen(self.model, inputs, optimizer)
+                self.model.train_model(self.model, inputs, optimizer)
 
             # Validation phase
             with torch.no_grad():
                 for features, _ in tqdm(val_loader):
-                    self.model.train_model_gen(self.model, inputs, optimizer, False)
+                    self.model.train_model(self.model, inputs, optimizer, False)
 
                 self.model.train()  # Set model back to train mode
 
