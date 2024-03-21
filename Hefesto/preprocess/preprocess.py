@@ -15,7 +15,7 @@ class Preprocess:
 
     def scaler_method(self) -> None:
         df_aux = self.scaler.fit_transform(self.df)
-        self.df = pd.DataFrame(df_aux, columns=self.df.columns, dtype="int")
+        self.df = pd.DataFrame(df_aux, columns=self.df.columns)
         dump(self.scaler, "./scaler/scaler.joblib")
 
     def outlayer(self):
@@ -41,6 +41,7 @@ class Preprocess:
             df_aux = self.scaler.inverse_transform(
                 self.df
             )  # Revertir la transformación
-            self.df = pd.DataFrame(df_aux, columns=self.df.columns, dtype="int")
+            df_aux = pd.DataFrame(df_aux, columns=self.df.columns)
+            self.df = df_aux.round().astype(int)  # Redondear y luego convertir a enteros
         else:
             print("Scaler has not been fitted yet.")

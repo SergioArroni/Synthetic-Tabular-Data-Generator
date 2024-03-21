@@ -1,12 +1,22 @@
 from torch import nn
 import torch
+import pandas as pd
 from torch.utils.data import DataLoader
 from Hefesto.models.model import Model
+from Hefesto.preprocess.load_data import do_data_loader
 
 
 class DiffusionModel(Model):
     def __init__(
-        self, input_dim, hidden_dim, dropout, T, device, alpha, seed, betas=None
+        self,
+        input_dim,
+        hidden_dim,
+        dropout,
+        T,
+        device,
+        alpha,
+        seed,
+        betas=None,
     ):
         super().__init__(
             input_dim=input_dim, hidden_dim=hidden_dim, seed=seed, device=device
@@ -42,7 +52,8 @@ class DiffusionModel(Model):
 
         self.apply(self._init_weights)
 
-    def forward(self, x: DataLoader) -> torch.Tensor:
+    def forward(self, x) -> torch.Tensor:
+
         x = x.to(self.device)
         z = self.encoder(x)
         z = self.transformer(z)

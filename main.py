@@ -14,16 +14,18 @@ from Hefesto.train_test.train import Train
 from Hefesto.preprocess.load_data import do_data_loader, read_data, split_data
 from Hefesto.preprocess.correlations import matrix_correlation
 from Hefesto.utils.utils import load_model, plot_statistics, save_model, write_results
+from Hefesto.preprocess.correlations import shap_values
 
 
 def main():
-    seed = 0
+    seed = 42
+    load = True
     torch.manual_seed(seed)
     random.seed(seed)
     np.random.seed(seed)
-    
-    
+
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print(device)
     torch.cuda.set_device(device)
     bach_size = 256
 
@@ -37,7 +39,7 @@ def main():
     test_loader: DataLoader = do_data_loader(df_test, bach_size, columnas, seed=seed)
     val_loader: DataLoader = do_data_loader(df_val, bach_size, columnas, seed=seed)
 
-    epochs = 200
+    epochs = 400
     T = 200
     betas = torch.linspace(0.1, 0.9, T)
     input_dim = train_loader.dataset.features.shape[1]
@@ -67,24 +69,28 @@ def main():
     # model = TransformerModel(
     #     input_dim=input_dim, hidden_dim=hidden_dim
     # )
+    if load:
+        model = load_model(
+            "./save_models/model_DiffusionModel_1711013118.7012281.pt",
+            model,
+        )
+    else:
+        train = Train(model, device, timestamp, epochs)
 
-    train = Train(model, device, timestamp, epochs)
+        train.train_model(train_loader, val_loader)
 
-    # model = load_model(
-    #     "./save_models/model_DiffusionModel_1709810144.782568.pt", model
-    # )
-
-    train.train_model(train_loader, val_loader)
-
-    if train is Train:
         model = train.model
 
-    save_model(f"./save_models/model_{model}_{timestamp}.pt", model)
+        save_model(f"./save_models/model_{model}_{timestamp}.pt", model)
+
+    # shap_values(df_test, model)
 
     test = Test(model, test_loader, val_loader, seed, device)
-    good_ele, bad_ele = test.evaluate_model()
+    good_ele, bad_ele, metrics = test.evaluate_model()
 
-    write_results(epochs, good_ele, bad_ele, "./results/results.txt", size, model, seed)
+    write_results(
+        epochs, good_ele, bad_ele, "./results/results.txt", size, model, seed, metrics
+    )
 
 
 if __name__ == "__main__":

@@ -23,5 +23,5 @@ class Model(nn.Module):
 
     def test_model_gen(self, model, input) -> torch.Tensor:
         model.eval()
-        gen = model(input).round()
+        gen = model(input)
         return gen

@@ -13,7 +13,7 @@ def save_model(path, model):
 
 def load_model(path: str, model: Model) -> Model:
     model.load_state_dict(torch.load(path))
-    return model
+    return model.to(model.device)
 
 
 def save_data(path, data):
@@ -22,7 +22,14 @@ def save_data(path, data):
 
 
 def write_results(
-    epochs, good_ele, bad_ele, path: str, size: int, model: Model, seed: int
+    epochs,
+    good_ele,
+    bad_ele,
+    path: str,
+    size: int,
+    model: Model,
+    seed: int,
+    metrics: tuple,
 ):
     with open(path, "a") as a:
         a.write(f"Seed: {seed}\n")
@@ -31,14 +38,14 @@ def write_results(
         a.write(f"Good Data Gen: {len(good_ele)}\n")
         a.write(f"Bad Data Gen: {len(bad_ele)}\n")
         a.write(f"Acierto: {(len(good_ele)/size)*100}%\n")
+        a.write(f"F1: {metrics[0]}\n")
+        a.write(f"Accuracy: {metrics[1]}\n")
         a.write("---------------------------------------------------------------\n")
 
 
 def plot_statistics(df, path: str):
     # Crear un boxplot para cada atributo
-    for i, column in enumerate(
-        df.columns, 1
-    ): 
+    for i, column in enumerate(df.columns, 1):
         fig, ax = plt.subplots()
         df.boxplot(column, ax=ax)
 
@@ -52,7 +59,7 @@ def plot_statistics(df, path: str):
         ax.axhline(median, color="red", linestyle="-", label=f"Median: {median:.2f}")
         ax.axhline(mean, color="green", linestyle="--", label=f"Mean: {mean:.2f}")
         # ax.axhline(std, color="blue", linestyle="-.", label=f"Std: {std:.2f}")
-        
+
         ax.text(
             0.95,
             0.01,
