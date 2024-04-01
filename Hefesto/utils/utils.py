@@ -30,6 +30,7 @@ def write_results(
     model: Model,
     seed: int,
     metrics: tuple,
+    cocktel: tuple,
 ):
     with open(path, "a") as a:
         a.write(f"Seed: {seed}\n")
@@ -40,6 +41,8 @@ def write_results(
         a.write(f"Acierto: {(len(good_ele)/size)*100}%\n")
         a.write(f"F1: {metrics[0]}\n")
         a.write(f"Accuracy: {metrics[1]}\n")
+        a.write(f"F1 Cocktel: {cocktel[0]}\n")
+        a.write(f"Accuracy Cocktel: {cocktel[1]}\n")
         a.write("---------------------------------------------------------------\n")
 
 

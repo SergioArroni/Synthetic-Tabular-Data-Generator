@@ -30,32 +30,49 @@ class DiffusionModel(Model):
         self.alpha = alpha
 
         self.encoder = nn.Sequential(
-            nn.Linear(input_dim, 256),
+            nn.Linear(input_dim, hidden_dim * 4),
             nn.LeakyReLU(),
             nn.Dropout(self.dropout),
-            nn.Linear(256, 128),
+            nn.Linear(hidden_dim * 4, hidden_dim * 3),
             nn.LeakyReLU(),
             nn.Dropout(self.dropout),
+            # nn.Linear(hidden_dim * 3, hidden_dim * 2),
+            # nn.LeakyReLU(),
+            # nn.Dropout(self.dropout),
         )
 
+        # self.mu_layer = nn.Linear(hidden_dim * 2, hidden_dim * 2)
+        # self.log_var_layer = nn.Linear(hidden_dim * 2, hidden_dim * 2)
+
         encoder_layers = nn.TransformerEncoderLayer(
-            d_model=128, nhead=4, dropout=self.dropout, batch_first=True
+            d_model=hidden_dim * 3, nhead=4, dropout=self.dropout, batch_first=True
         )
         self.transformer = nn.TransformerEncoder(encoder_layers, num_layers=4)
 
         self.decoder = nn.Sequential(
-            nn.Linear(128, 128),
+            nn.Linear(hidden_dim * 3, hidden_dim * 3),
             nn.LeakyReLU(),
             nn.Dropout(self.dropout),
-            nn.Linear(128, input_dim),
+            # nn.Linear(hidden_dim * 2, hidden_dim),
+            # nn.LeakyReLU(),
+            # nn.Dropout(self.dropout),
+            nn.Linear(hidden_dim * 3, input_dim),
         )
 
         self.apply(self._init_weights)
+
+    def reparameterize(self, mu, log_var):
+        std = torch.exp(0.5 * log_var)
+        eps = torch.randn_like(std)
+        return mu + eps * std
 
     def forward(self, x) -> torch.Tensor:
 
         x = x.to(self.device)
         z = self.encoder(x)
+        # mu = self.mu_layer(z)
+        # log_var = torch.clamp(self.log_var_layer(z), min=-10, max=10)
+        # z = self.reparameterize(mu, log_var)
         z = self.transformer(z)
 
         for t in range(self.t_value):
@@ -69,6 +86,9 @@ class DiffusionModel(Model):
 
             noise = torch.randn_like(z) * adjusted_noise_scale.to(self.device)
             z = torch.sqrt(1.0 - beta_t).to(self.device) * z + noise
+
+        # z = z.unsqueeze(1)
+        # z = self.transformer(z).squeeze(1)
 
         x = self.decoder(z)
         return x

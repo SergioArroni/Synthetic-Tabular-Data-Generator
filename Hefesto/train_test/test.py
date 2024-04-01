@@ -60,8 +60,8 @@ class Test:
         # prep.des_scale()
         # df = prep.df
 
-        plot_statistics(df, f"./img/stadistics/gendata/bruto/boxplot")
-        
+        plot_statistics(df, f"./img/stadistics/gendata/boxplot")
+
         matrix_correlation(df, "gen")
 
         save_data(
@@ -78,16 +78,23 @@ class Test:
                 good_ele.append(ele)
             else:
                 bad_ele.append(ele)
-        
+
         # Extraer la X y la y de df
         X = df.drop("cardio", axis=1)
         y = df["cardio"]
 
-        metrics = self.evaluate_regression(
-            X, y
-        )
+        metrics = self.evaluate_regression(X, y)
+        
+        df_test = pd.read_csv("data/cardio/split/cardio_test.csv", sep=";")
 
-        return good_ele, bad_ele, metrics
+        df_cocktel = pd.concat([df, df_test], axis=0)
+
+        X = df_cocktel.drop("cardio", axis=1)
+        y = df_cocktel["cardio"]
+
+        metrics_cocktel = self.evaluate_regression(X, y)
+
+        return good_ele, bad_ele, metrics, metrics_cocktel
 
     def isolation_forest(self):
         clf = IsolationForest(random_state=self.seed).fit(
@@ -115,8 +122,8 @@ class Test:
 
         # Evaluar el modelo
         predictions = model.predict(X_test)
-        
-        f1 = f1_score(y_test, predictions)
+
+        f1 = f1_score(y_test, predictions, average="weighted")
         accuracy = accuracy_score(y_test, predictions)
 
         return (f1, accuracy)

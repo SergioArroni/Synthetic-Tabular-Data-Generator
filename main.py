@@ -19,7 +19,7 @@ from Hefesto.preprocess.correlations import shap_values
 
 def main():
     seed = 42
-    load = True
+    load = False
     torch.manual_seed(seed)
     random.seed(seed)
     np.random.seed(seed)
@@ -39,7 +39,7 @@ def main():
     test_loader: DataLoader = do_data_loader(df_test, bach_size, columnas, seed=seed)
     val_loader: DataLoader = do_data_loader(df_val, bach_size, columnas, seed=seed)
 
-    epochs = 400
+    epochs = 200
     T = 200
     betas = torch.linspace(0.1, 0.9, T)
     input_dim = train_loader.dataset.features.shape[1]
@@ -61,7 +61,7 @@ def main():
     #     input_dim=train_loader.dataset.features.shape[1],
     #     hidden_dim=128,
     #     latent_dim=2,
-    #     device=device,
+    #     device=device,ass
     # )
     # model = GANModel(
     #     input_dim=input_dim, hidden_dim=hidden_dim, device=device
@@ -71,7 +71,7 @@ def main():
     # )
     if load:
         model = load_model(
-            "./save_models/model_DiffusionModel_1711013118.7012281.pt",
+            "./save_models/model_DiffusionModel_1711906929.4701447.pt",
             model,
         )
     else:
@@ -86,10 +86,10 @@ def main():
     # shap_values(df_test, model)
 
     test = Test(model, test_loader, val_loader, seed, device)
-    good_ele, bad_ele, metrics = test.evaluate_model()
+    good_ele, bad_ele, metrics, cocktel = test.evaluate_model()
 
     write_results(
-        epochs, good_ele, bad_ele, "./results/results.txt", size, model, seed, metrics
+        epochs, good_ele, bad_ele, "./results/results.txt", size, model, seed, metrics, cocktel
     )
 
 

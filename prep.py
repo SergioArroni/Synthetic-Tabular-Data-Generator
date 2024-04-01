@@ -17,20 +17,12 @@ def main():
     torch.cuda.set_device(device)
     df = read_data("data/cardio/cardio_train.csv")
     df = df.drop("id", axis=1)
-    plot_statistics(df, f"./img/stadistics/cardio/bruto/boxplot")
+    plot_statistics(df, f"./img/stadistics/cardio/boxplot")
     matrix_correlation(df, "all")
 
-    # prep = Preprocess(df)
-    # prep.scaler_method()
-    # df = prep.df
-
-    # plot_statistics(df, f"./img/stadistics/cardio/standar/boxplot")
-
-    # df["new_column"] = 0
-
-    n = 5000
-    m = 5000
-    v = 5000
+    n = 20000
+    m = 20000
+    v = 20000
 
     df_train, df_test, df_val = split_data(df, n, m, v)
     df_train.to_csv("data/cardio/split/cardio_train.csv", sep=";", index=False)

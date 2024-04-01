@@ -2167,7 +2167,7 @@ Bad Data Gen: 412
 Acierto: 91.75999999999999%
 F1: 0.733286418015482
 Accuracy: 0.621
----------------------------------------------------------------
+---------------------------------------------------------------A - 5000
 Seed: 42
 Model: DiffusionModel
 Epochs: 400
@@ -2176,4 +2176,240 @@ Bad Data Gen: 421
 Acierto: 91.58%
 F1: 0.7132867132867133
 Accuracy: 0.59
+---------------------------------------------------------------
+Seed: 42
+Model: DiffusionModel
+Epochs: 400
+Good Data Gen: 9819
+Bad Data Gen: 181
+Acierto: 98.19%
+F1: 0.9997499374843711
+Accuracy: 0.9995
+---------------------------------------------------------------A - 10000
+Seed: 42
+Model: DiffusionModel
+Epochs: 200
+Good Data Gen: 5577
+Bad Data Gen: 4423
+Acierto: 55.769999999999996%
+F1: 0.982706002034588
+Accuracy: 0.966
+---------------------------------------------------------------A - 20000
+Seed: 42
+Model: DiffusionModel
+Epochs: 200
+Good Data Gen: 19023
+Bad Data Gen: 977
+Acierto: 95.11500000000001%
+F1: 0.9842559674961909
+Accuracy: 0.969
+---------------------------------------------------------------
+Seed: 42
+Model: DiffusionModel
+Epochs: 200
+Good Data Gen: 9200
+Bad Data Gen: 800
+Acierto: 92.0%
+F1: 0.0
+Accuracy: 0.9835
+---------------------------------------------------------------
+Seed: 42
+Model: DiffusionModel
+Epochs: 200
+Good Data Gen: 8328
+Bad Data Gen: 1672
+Acierto: 83.28%
+F1: 0.9219973009446694
+Accuracy: 0.8555
+---------------------------------------------------------------A- 2000
+Seed: 42
+Model: DiffusionModel
+Epochs: 200
+Good Data Gen: 794
+Bad Data Gen: 1206
+Acierto: 39.7%
+F1: 0.6950959488272921
+Accuracy: 0.6425
+---------------------------------------------------------------
+Seed: 42
+Model: DiffusionModel
+Epochs: 200
+Good Data Gen: 9440
+Bad Data Gen: 560
+Acierto: 94.39999999999999%
+F1: 0.9398356745295521
+Accuracy: 0.8865
+---------------------------------------------------------------
+Seed: 42
+Model: DiffusionModel
+Epochs: 200
+Good Data Gen: 0
+Bad Data Gen: 10000
+Acierto: 0.0%
+F1: 0.0
+Accuracy: 1.0
+---------------------------------------------------------------
+Seed: 42
+Model: DiffusionModel
+Epochs: 200
+Good Data Gen: 9019
+Bad Data Gen: 981
+Acierto: 90.19%
+F1: 0.5143177989893318
+Accuracy: 0.5675
+---------------------------------------------------------------
+Seed: 42
+Model: DiffusionModel
+Epochs: 200
+Good Data Gen: 9931
+Bad Data Gen: 69
+Acierto: 99.31%
+F1: 1.0
+Accuracy: 1.0
+---------------------------------------------------------------
+Seed: 42
+Model: DiffusionModel
+Epochs: 200
+Good Data Gen: 8460
+Bad Data Gen: 1540
+Acierto: 84.6%
+F1: 0.9388947927736451
+Accuracy: 0.885
+---------------------------------------------------------------
+Seed: 42
+Model: DiffusionModel
+Epochs: 200
+Good Data Gen: 9211
+Bad Data Gen: 789
+Acierto: 92.11%
+F1: 0.9937106918238994
+Accuracy: 0.9875
+---------------------------------------------------------------
+Seed: 42
+Model: DiffusionModel
+Epochs: 200
+Good Data Gen: 287
+Bad Data Gen: 713
+Acierto: 28.7%
+F1: 0.5538461538461539
+Accuracy: 0.71
+---------------------------------------------------------------
+Seed: 42
+Model: DiffusionModel
+Epochs: 200
+Good Data Gen: 946
+Bad Data Gen: 54
+Acierto: 94.6%
+F1: 0.0
+Accuracy: 1.0
+---------------------------------------------------------------
+Seed: 42
+Model: DiffusionModel
+Epochs: 200
+Good Data Gen: 946
+Bad Data Gen: 54
+Acierto: 94.6%
+F1: 0.0
+Accuracy: 1.0
+F1 Cocktel: 0.6408839779005525
+Accuracy Cocktel: 0.8375
+---------------------------------------------------------------
+Seed: 42
+Model: DiffusionModel
+Epochs: 200
+Good Data Gen: 0
+Bad Data Gen: 10000
+Acierto: 0.0%
+F1: 1.0
+Accuracy: 1.0
+F1 Cocktel: 0.9029521547336274
+Accuracy Cocktel: 0.857
+---------------------------------------------------------------
+Seed: 42
+Model: DiffusionModel
+Epochs: 200
+Good Data Gen: 0
+Bad Data Gen: 10000
+Acierto: 0.0%
+F1: 0.0
+Accuracy: 1.0
+F1 Cocktel: 0.692845615922539
+Accuracy Cocktel: 0.85725
+---------------------------------------------------------------
+Seed: 42
+Model: DiffusionModel
+Epochs: 400
+Good Data Gen: 0
+Bad Data Gen: 10000
+Acierto: 0.0%
+F1: 1.0
+Accuracy: 1.0
+F1 Cocktel: 0.8561824577702702
+Accuracy Cocktel: 0.8565
+---------------------------------------------------------------
+Seed: 42
+Model: DiffusionModel
+Epochs: 250
+Good Data Gen: 10000
+Bad Data Gen: 0
+Acierto: 100.0%
+F1: 1.0
+Accuracy: 1.0
+F1 Cocktel: 0.856533306677099
+Accuracy Cocktel: 0.85675
+---------------------------------------------------------------
+Seed: 42
+Model: DiffusionModel
+Epochs: 250
+Good Data Gen: 9930
+Bad Data Gen: 70
+Acierto: 99.3%
+F1: 1.0
+Accuracy: 1.0
+F1 Cocktel: 0.8603316760512759
+Accuracy Cocktel: 0.859
+---------------------------------------------------------------A - 10000
+Seed: 42
+Model: DiffusionModel
+Epochs: 250
+Good Data Gen: 4642
+Bad Data Gen: 5358
+Acierto: 46.42%
+F1: 0.7776090783201831
+Accuracy: 0.8375
+F1 Cocktel: 0.7592360002265763
+Accuracy Cocktel: 0.771
+---------------------------------------------------------------
+Seed: 42
+Model: DiffusionModel
+Epochs: 200
+Good Data Gen: 9229
+Bad Data Gen: 771
+Acierto: 92.29%
+F1: 0.9985002501250626
+Accuracy: 0.999
+F1 Cocktel: 0.8514237255915069
+Accuracy Cocktel: 0.853
+---------------------------------------------------------------
+Seed: 42
+Model: DiffusionModel
+Epochs: 200
+Good Data Gen: 7397
+Bad Data Gen: 2603
+Acierto: 73.97%
+F1: 0.8037814032002559
+Accuracy: 0.8565
+F1 Cocktel: 0.7567503281755936
+Accuracy Cocktel: 0.7835
+---------------------------------------------------------------A - 10000
+Seed: 42
+Model: DiffusionModel
+Epochs: 200
+Good Data Gen: 9765
+Bad Data Gen: 235
+Acierto: 97.65%
+F1: 0.6851390441667168
+Accuracy: 0.7495
+F1 Cocktel: 0.7136411559084165
+Accuracy Cocktel: 0.721
 ---------------------------------------------------------------

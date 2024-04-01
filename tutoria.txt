@@ -1,8 +1,0 @@
-Numero de datos
-Evaluación, explicar Eficiencia, yo uso, estadisticas, isolation forest e insepcion visual
-Explicar modelo de difusion
-Problema de la std
-Poner graficas
-Standarizar?
-Normalizar?
-Outlayers?
