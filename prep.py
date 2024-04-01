@@ -20,9 +20,9 @@ def main():
     plot_statistics(df, f"./img/stadistics/cardio/boxplot")
     matrix_correlation(df, "all")
 
-    n = 20000
-    m = 20000
-    v = 20000
+    n = 5000
+    m = 5000
+    v = 5000
 
     df_train, df_test, df_val = split_data(df, n, m, v)
     df_train.to_csv("data/cardio/split/cardio_train.csv", sep=";", index=False)
