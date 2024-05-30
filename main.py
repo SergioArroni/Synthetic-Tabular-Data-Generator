@@ -9,8 +9,8 @@ from Hefesto.models.VAE.VAE import VAEModel
 from Hefesto.models.diffusion.diffusion import DiffusionModel
 from Hefesto.models.GAN.GAN import GANModel
 from Hefesto.models.transformers.transformers import TransformerModel
-from TFM.Hefesto.train_test.test.test import Test
-from TFM.Hefesto.train_test.train.train import Train
+from Hefesto.train_test import Test
+from Hefesto.train_test import Train
 from Hefesto.preprocess.load_data import do_data_loader, read_data, split_data
 from Hefesto.preprocess.correlations import matrix_correlation
 from Hefesto.utils.utils import load_model, plot_statistics, save_model, write_results
@@ -19,7 +19,7 @@ from Hefesto.preprocess.correlations import shap_values
 
 def main():
     seed = 42
-    load = False
+    load = True
     torch.manual_seed(seed)
     random.seed(seed)
     np.random.seed(seed)
@@ -57,21 +57,10 @@ def main():
         seed=seed,
         betas=betas,
     )
-    # model = VAEModel(
-    #     input_dim=train_loader.dataset.features.shape[1],
-    #     hidden_dim=128,
-    #     latent_dim=2,
-    #     device=device,ass
-    # )
-    # model = GANModel(
-    #     input_dim=input_dim, hidden_dim=hidden_dim, device=device
-    # )
-    # model = TransformerModel(
-    #     input_dim=input_dim, hidden_dim=hidden_dim
-    # )
+
     if load:
         model = load_model(
-            "./save_models/model_DiffusionModel_1711906929.4701447.pt",
+            "./save_models/model_DiffusionModel_1717059741.4930017.pt",
             model,
         )
     else:
@@ -86,11 +75,7 @@ def main():
     # shap_values(df_test, model)
 
     test = Test(model, test_loader, val_loader, seed, device)
-    good_ele, bad_ele, metrics, cocktel = test.evaluate_model()
-
-    write_results(
-        epochs, good_ele, bad_ele, "./results/results.txt", size, model, seed, metrics, cocktel
-    )
+    test.evaluate_model()
 
 
 if __name__ == "__main__":
