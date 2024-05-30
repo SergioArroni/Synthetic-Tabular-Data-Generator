@@ -2424,3 +2424,25 @@ Accuracy: 0.63225
 F1 Cocktel: 0.6635140339348437
 Accuracy Cocktel: 0.672
 ---------------------------------------------------------------
+Seed: 42
+Model: DiffusionModel
+Epochs: 200
+Good Data Gen: 0
+Bad Data Gen: 20000
+Acierto: 0.0%
+F1: 1.0
+Accuracy: 1.0
+F1 Cocktel: 0.8601169921159432
+Accuracy Cocktel: 0.859375
+---------------------------------------------------------------
+Seed: 42
+Model: DiffusionModel
+Epochs: 200
+Good Data Gen: 12345
+Bad Data Gen: 7655
+Acierto: 61.724999999999994%
+F1: 0.5212894282209796
+Accuracy: 0.5305
+F1 Cocktel: 0.626572477845541
+Accuracy Cocktel: 0.628
+---------------------------------------------------------------

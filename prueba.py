@@ -6,8 +6,8 @@ from Hefesto.utils.preprocess import (
     do_data_loader,
 )
 from Hefesto.utils.utils import load_model, write_results
-from Hefesto.train_test.train import Train
-from Hefesto.train_test.test import Test
+from TFM.Hefesto.train_test.train.train import Train
+from TFM.Hefesto.train_test.test.test import Test
 from Hefesto.models.diffusion.diffusion import DiffusionModel
 from Hefesto.models.diffusion.diffusion_v2 import DiffusionModel as DiffusionModelV2
 from Hefesto.models.GAN.GAN import GANModel

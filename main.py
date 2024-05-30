@@ -9,8 +9,8 @@ from Hefesto.models.VAE.VAE import VAEModel
 from Hefesto.models.diffusion.diffusion import DiffusionModel
 from Hefesto.models.GAN.GAN import GANModel
 from Hefesto.models.transformers.transformers import TransformerModel
-from Hefesto.train_test.test import Test
-from Hefesto.train_test.train import Train
+from TFM.Hefesto.train_test.test.test import Test
+from TFM.Hefesto.train_test.train.train import Train
 from Hefesto.preprocess.load_data import do_data_loader, read_data, split_data
 from Hefesto.preprocess.correlations import matrix_correlation
 from Hefesto.utils.utils import load_model, plot_statistics, save_model, write_results

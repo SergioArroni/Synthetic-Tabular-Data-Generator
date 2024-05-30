@@ -83,7 +83,7 @@ class Test:
         X = df.drop("cardio", axis=1)
         y = df["cardio"]
 
-        metrics = self.evaluate_regression(X, y)
+        metrics = self.utility_TTS_vs_TTR(X, y)
         
         df_test = pd.read_csv("data/cardio/split/cardio_test.csv", sep=";")
 
@@ -92,7 +92,7 @@ class Test:
         X = df_cocktel.drop("cardio", axis=1)
         y = df_cocktel["cardio"]
 
-        metrics_cocktel = self.evaluate_regression(X, y)
+        metrics_cocktel = self.utility_TSTR(X, y)
 
         return good_ele, bad_ele, metrics, metrics_cocktel
 
@@ -102,7 +102,7 @@ class Test:
         )
         return clf
 
-    def evaluate_regression(self, X, y):
+    def utility(self, X, y):
         """
         Evalúa el desempeño de un modelo de regresión sobre los datos generados.
         """
@@ -125,5 +125,25 @@ class Test:
 
         f1 = f1_score(y_test, predictions, average="weighted")
         accuracy = accuracy_score(y_test, predictions)
+
+        return (f1, accuracy)
+    
+    def utility_TSTR(self, X, y):
+        """
+        Evalúa el desempeño de un modelo de regresión sobre los datos generados.
+        """
+        # Escalar los datos
+        scaler = StandardScaler()
+        X = scaler.fit_transform(X)
+
+        # Entrenar el modelo
+        model = RandomForestClassifier(random_state=self.seed)
+        model.fit(X, y)
+
+        # Evaluar el modelo
+        predictions = model.predict(X)
+
+        f1 = f1_score(y, predictions, average="weighted")
+        accuracy = accuracy_score(y, predictions)
 
         return (f1, accuracy)
