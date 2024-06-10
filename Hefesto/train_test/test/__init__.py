@@ -1,4 +1,4 @@
 from .test import Test
 from .utility import *
-from .privacity import *
+from .privacy import *
 from .quality import *

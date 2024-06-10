@@ -5,9 +5,20 @@ from tqdm import tqdm
 from torch.utils.data import DataLoader
 from Hefesto.models.model import Model
 from Hefesto.utils import save_data, plot_statistics
-from Hefesto.train_test.test.quality.detection import IsolationForestDetection
+from Hefesto.train_test.test.quality.detection import (
+    IsolationForestDetection,
+    LOFDetection,
+    AEDetection,
+)
 from Hefesto.train_test.test.utility.efficiency import TTS, TTSR, TSTR, TRTS
 from Hefesto.train_test.test.quality.stadistics import Correlation, Metrics, Tests
+from Hefesto.train_test.test.privacy import (
+    DCR,
+    DifferentialPrivacy,
+    IdentityAttributeDisclosure,
+    MembershipInferenceAttack,
+    MMD,
+)
 
 
 class Test:
@@ -29,7 +40,6 @@ class Test:
         self.gen_data = torch.empty(0, tam).to(self.device)
         self.df_test = None
         self.df_gen_data = None
-        self.df_test = None
 
     def generate_data(self):
 
@@ -42,30 +52,90 @@ class Test:
                 self.gen_data = torch.cat((self.gen_data, gen), 0)
 
     def evaluate_efficiency(self):
-        ttsttr = TTS(self.df_gen_data, self.df_test, self.seed)
+        ttsttr = TTS(
+            df=self.df_gen_data,
+            df_test=self.df_test,
+            seed=self.seed,
+            path="./final_results/utility/efficiency/TTS.txt",
+        )
         ttsttr.execute()
-        ttsr = TTSR(self.df_gen_data, self.df_test, self.seed)
+        ttsr = TTSR(
+            df=self.df_gen_data,
+            df_test=self.df_test,
+            seed=self.seed,
+            path="./final_results/utility/efficiency/TTSR.txt",
+        )
         ttsr.execute()
-        tstr = TSTR(self.df_gen_data, self.df_test, self.seed)
+        tstr = TSTR(
+            df=self.df_gen_data,
+            df_test=self.df_test,
+            seed=self.seed,
+            path="./final_results/utility/efficiency/TSTR.txt",
+        )
         tstr.execute()
-        trts = TRTS(self.df_test, self.df_gen_data, self.seed)
+        trts = TRTS(
+            df=self.df_gen_data,
+            df_test=self.df_test,
+            seed=self.seed,
+            path="./final_results/utility/efficiency/TRTS.txt",
+        )
         trts.execute()
 
     def evaluate_detection(self):
-        isolation_forest = IsolationForestDetection(
-            self.test_loader, self.gen_data, self.seed
-        )
-        isolation_forest.execute()
+        IsolationForestDetection(
+            test_loader=self.test_loader,
+            gen_data=self.gen_data,
+            seed=self.seed,
+            path="./final_results/quality/detection/isolation.txt",
+        ).execute()
+        LOFDetection(
+            test_loader=self.test_loader,
+            gen_data=self.gen_data,
+            seed=self.seed,
+            path="./final_results/quality/detection/lof.txt",
+        ).execute()
+        AEDetection(
+            test_loader=self.test_loader,
+            gen_data=self.gen_data,
+            seed=self.seed,
+            path="./final_results/quality/detection/ae.txt",
+        ).execute()
 
     def evaluate_stadistics(self, df: pd.DataFrame):
-        Correlation(df).matrix_correlation("gen")
-        Metrics(df).calculate_metrics()
-        tests = Tests(data=self.df_test, data2=self.gen_data)
-        tests.test_kl()
-        tests.test_ks()
+        Correlation(df, "./final_results/quality/statistics/corr.png").execute()
+        Metrics(df, "./final_results/quality/statistics/metrics.txt").execute()
+        Tests(
+            data=self.df_test,
+            data2=self.gen_data,
+            path="./final_results/quality/statistics/tests.txt",
+        ).execute()
 
     def evaluate_privacy(self):
-        pass
+        DifferentialPrivacy(
+            data=self.df_test,
+            gen_data=self.gen_data,
+            path="./final_results/privacy/differential.txt",
+        ).execute()
+        IdentityAttributeDisclosure(
+            data=self.df_test,
+            gen_data=self.gen_data,
+            path="./final_results/privacy/identity.txt",
+        ).execute()
+        DCR(
+            data=self.df_test,
+            gen_data=self.gen_data,
+            path="./final_results/privacy/dcr.txt",
+        ).execute()
+        MembershipInferenceAttack(
+            data=self.df_test,
+            gen_data=self.gen_data,
+            path="./final_results/privacy/membership.txt",
+        ).execute()
+        MMD(
+            data=self.df_test,
+            gen_data=self.gen_data,
+            path="./final_results/privacy/mmd.txt",
+        ).execute()
 
     def evaluate_quality(self, df):
         self.evaluate_stadistics(df=df)
@@ -95,11 +165,11 @@ class Test:
         plot_statistics(self.df_gen_data, f"./img/stadistics/gendata/boxplot")
 
         save_data(
-            f"./results/gen_data/generated_data_{self.model}_{self.seed}_{time.time()}.csv",
+            f"./final_results/data/generated_data_{self.model}_{self.seed}_{time.time()}.csv",
             self.df_gen_data,
         )
         self.df_test = pd.read_csv("data/cardio/split/cardio_test.csv", sep=";")
 
-        self.evaluate_utility()
-        self.evaluate_quality(self.df_gen_data)
+        # self.evaluate_utility()
+        # self.evaluate_quality(self.df_gen_data)
         self.evaluate_privacy()

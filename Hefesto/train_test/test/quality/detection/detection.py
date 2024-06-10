@@ -1,12 +1,12 @@
 class Detection:
     """Clase base para detectar anomalías."""
 
-    def __init__(self, gen_data, seed, file_name):
+    def __init__(self, gen_data, seed, path):
         self.gen_data = gen_data
         self.seed = seed
         self.good_ele = []
         self.bad_ele = []
-        self.file_name = file_name
+        self.path = path
         self.model = None
 
     def detection_model(self):
@@ -22,7 +22,7 @@ class Detection:
 
     def save_results(self):
         # Save the results in a file
-        with open(self.file_name, "w") as file:
+        with open(self.path, "w") as file:
             file.write(f"Good elements: {len(self.good_ele)}\n")
             file.write(f"Bad elements: {len(self.bad_ele)}\n")
             file.write(

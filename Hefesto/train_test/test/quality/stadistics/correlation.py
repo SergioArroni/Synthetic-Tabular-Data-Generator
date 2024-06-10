@@ -4,10 +4,10 @@ from Hefesto.train_test.test.quality.stadistics import Stadistics
 
 
 class Correlation(Stadistics):
-    def __init__(self, data):
-        super().__init__(data)
+    def __init__(self, data, path: str):
+        super().__init__(data=data, path=path)
 
-    def matrix_correlation(self, name: str):
+    def matrix_correlation(self):
         """_summary_
 
         Args:
@@ -35,5 +35,8 @@ class Correlation(Stadistics):
         fig.colorbar(cax)
         plt.xticks(range(len(corr.columns)), corr.columns, rotation=90)
         plt.yticks(range(len(corr.columns)), corr.columns)
-        plt.savefig(f"./img/correlation/correlation_matrix_{name}.png")
+        plt.savefig(self.path)
         # plt.show()
+        
+    def execute(self):
+        self.matrix_correlation()

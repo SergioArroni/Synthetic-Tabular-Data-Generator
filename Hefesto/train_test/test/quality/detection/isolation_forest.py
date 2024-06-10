@@ -10,9 +10,9 @@ class IsolationForestDetection(Detection):
         test_loader,
         gen_data,
         seed,
-        file_name="./new_results/detection/detection.txt",
+        path,
     ):
-        super().__init__(gen_data=gen_data, seed=seed, file_name=file_name)
+        super().__init__(gen_data=gen_data, seed=seed, path=path)
         self.test_loader = test_loader
 
     def detection_model(self):

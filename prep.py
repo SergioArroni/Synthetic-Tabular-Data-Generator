@@ -1,7 +1,6 @@
 import torch
 
 from Hefesto.preprocess.load_data import read_data, split_data
-from Hefesto.preprocess.correlations import matrix_correlation
 from Hefesto.utils.utils import plot_statistics
 from Hefesto.preprocess.preprocess import Preprocess
 
@@ -18,7 +17,7 @@ def main():
     df = read_data("data/cardio/cardio_train.csv")
     df = df.drop("id", axis=1)
     plot_statistics(df, f"./img/stadistics/cardio/boxplot")
-    matrix_correlation(df, "all")
+    # matrix_correlation(df, "all")
 
     n = 5000
     m = 5000
@@ -29,7 +28,7 @@ def main():
     df_test.to_csv("data/cardio/split/cardio_test.csv", sep=";", index=False)
     df_val.to_csv("data/cardio/split/cardio_val.csv", sep=";", index=False)
     
-    matrix_correlation(df, "val")
+    # matrix_correlation(df, "val")
 
     X = df_val.drop("cardio", axis=1)
     y = df_val["cardio"]

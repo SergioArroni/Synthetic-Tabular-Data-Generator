@@ -6,11 +6,12 @@ from sklearn.model_selection import train_test_split
 
 class Effiency:
     """Clase para evaluar la eficiencia de un modelo de clasificación."""
-    def __init__(self, file_name, seed, X=None, y=None):
+
+    def __init__(self, path, seed, X=None, y=None):
         self.X = X
         self.y = y
         self.seed = seed
-        self.file_name = file_name
+        self.path = path
         self.result = None
         self.X_train = None
         self.X_test = None
@@ -42,7 +43,7 @@ class Effiency:
 
     def print_result(self):
         # Print the result in a file
-        with open(self.file_name, "w") as f:
+        with open(self.path, "w") as f:
             f.write("f1, accuracy\n")
             f.write(f"{self.result[0]}, {self.result[1]}\n")
 
