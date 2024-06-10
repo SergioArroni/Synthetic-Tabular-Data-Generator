@@ -111,15 +111,15 @@ class Test:
         ).execute()
 
     def evaluate_privacy(self):
-        DifferentialPrivacy(
-            data=self.df_test,
-            gen_data=self.gen_data,
-            path="./final_results/privacy/differential.txt",
-        ).execute()
         IdentityAttributeDisclosure(
             data=self.df_test,
             gen_data=self.gen_data,
             path="./final_results/privacy/identity.txt",
+        ).execute()
+        DifferentialPrivacy(
+            data=self.df_test,
+            gen_data=self.gen_data,
+            path="./final_results/privacy/differential.txt",
         ).execute()
         DCR(
             data=self.df_test,
@@ -170,6 +170,6 @@ class Test:
         )
         self.df_test = pd.read_csv("data/cardio/split/cardio_test.csv", sep=";")
 
-        # self.evaluate_utility()
-        # self.evaluate_quality(self.df_gen_data)
+        self.evaluate_utility()
+        self.evaluate_quality(self.df_gen_data)
         self.evaluate_privacy()

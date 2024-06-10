@@ -1,4 +1,6 @@
 import numpy as np
+import torch
+import pandas as pd
 from Hefesto.train_test.test.privacy import Privacy
 
 class IdentityAttributeDisclosure(Privacy):
@@ -7,18 +9,32 @@ class IdentityAttributeDisclosure(Privacy):
         self.attribute_disclosure_rate = None
         self.identity_disclosure_rate = None
 
+    def to_numpy(self, data):
+        """
+        Convert data to NumPy array if it is not already.
+        """
+        if isinstance(data, np.ndarray):
+            return data
+        elif isinstance(data, torch.Tensor):
+            return data.detach().cpu().numpy()
+        else:
+            return data.to_numpy()
+
     def simulate_attribute_attack(self, known_attributes_percentage=0.01):
         """
         Simulate an attribute disclosure attack by revealing a small percentage of attributes
         and trying to guess the rest.
         """
-        num_attributes = self.data.shape[1]
+        original_data = self.to_numpy(self.data)
+        synthetic_data = self.to_numpy(self.gen_data)
+
+        num_attributes = original_data.shape[1]
         num_known_attributes = int(num_attributes * known_attributes_percentage)
         
         correct_guesses = 0
         total_guesses = 0
 
-        for original_record, synthetic_record in zip(self.data, self.gen_data):
+        for original_record, synthetic_record in zip(original_data, synthetic_data):
             known_indices = np.random.choice(num_attributes, num_known_attributes, replace=False)
             known_attributes = original_record[known_indices]
 
@@ -33,14 +49,17 @@ class IdentityAttributeDisclosure(Privacy):
         """
         Simulate an identity disclosure attack by checking if any synthetic record matches an original record.
         """
+        original_data = self.to_numpy(self.data)
+        synthetic_data = self.to_numpy(self.gen_data)
+
         matches = 0
-        for original_record in self.data:
-            for synthetic_record in self.gen_data:
+        for original_record in original_data:
+            for synthetic_record in synthetic_data:
                 if np.array_equal(original_record, synthetic_record):
                     matches += 1
                     break
 
-        self.identity_disclosure_rate = matches / len(self.data)
+        self.identity_disclosure_rate = matches / len(original_data)
 
     def write_results(self):
         with open(self.path, "w") as file:
@@ -51,4 +70,3 @@ class IdentityAttributeDisclosure(Privacy):
         self.simulate_attribute_attack()
         self.simulate_identity_attack()
         self.write_results()
-

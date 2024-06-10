@@ -14,7 +14,7 @@ from Hefesto.utils.utils import load_model, plot_statistics, save_model, write_r
 
 def main():
     seed = 42
-    load = True
+    load = False
     torch.manual_seed(seed)
     random.seed(seed)
     np.random.seed(seed)
