@@ -4,17 +4,12 @@ import torch
 import random
 import numpy as np
 from torch.utils.data import DataLoader
-from Hefesto.models.VAE.VAE import VAEModel
 
 from Hefesto.models.diffusion.diffusion import DiffusionModel
-from Hefesto.models.GAN.GAN import GANModel
-from Hefesto.models.transformers.transformers import TransformerModel
 from Hefesto.train_test import Test
 from Hefesto.train_test import Train
 from Hefesto.preprocess.load_data import do_data_loader, read_data, split_data
-from Hefesto.preprocess.correlations import matrix_correlation
 from Hefesto.utils.utils import load_model, plot_statistics, save_model, write_results
-from Hefesto.preprocess.correlations import shap_values
 
 
 def main():

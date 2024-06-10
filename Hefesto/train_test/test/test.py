@@ -1,13 +1,13 @@
-from torch.utils.data import DataLoader
 import pandas as pd
-from Hefesto.models.model import Model
-from Hefesto.train_test.test.detection import IsolationForestDetection
-from Hefesto.utils import save_data, plot_statistics
-from Hefesto.preprocess.correlations import matrix_correlation
-from Hefesto.train_test.test.utility import TTSTTR, TTSR, TSTR, TRTS
 import time
 import torch
 from tqdm import tqdm
+from torch.utils.data import DataLoader
+from Hefesto.models.model import Model
+from Hefesto.utils import save_data, plot_statistics
+from Hefesto.train_test.test.quality.detection import IsolationForestDetection
+from Hefesto.train_test.test.utility.efficiency import TTS, TTSR, TSTR, TRTS
+from Hefesto.train_test.test.quality.stadistics import Correlation, Metrics, Tests
 
 
 class Test:
@@ -27,6 +27,9 @@ class Test:
         self.device = device
         tam = self.val_loader.dataset.features.shape[1]
         self.gen_data = torch.empty(0, tam).to(self.device)
+        self.df_test = None
+        self.df_gen_data = None
+        self.df_test = None
 
     def generate_data(self):
 
@@ -38,6 +41,39 @@ class Test:
 
                 self.gen_data = torch.cat((self.gen_data, gen), 0)
 
+    def evaluate_efficiency(self):
+        ttsttr = TTS(self.df_gen_data, self.df_test, self.seed)
+        ttsttr.execute()
+        ttsr = TTSR(self.df_gen_data, self.df_test, self.seed)
+        ttsr.execute()
+        tstr = TSTR(self.df_gen_data, self.df_test, self.seed)
+        tstr.execute()
+        trts = TRTS(self.df_test, self.df_gen_data, self.seed)
+        trts.execute()
+
+    def evaluate_detection(self):
+        isolation_forest = IsolationForestDetection(
+            self.test_loader, self.gen_data, self.seed
+        )
+        isolation_forest.execute()
+
+    def evaluate_stadistics(self, df: pd.DataFrame):
+        Correlation(df).matrix_correlation("gen")
+        Metrics(df).calculate_metrics()
+        tests = Tests(data=self.df_test, data2=self.gen_data)
+        tests.test_kl()
+        tests.test_ks()
+
+    def evaluate_privacy(self):
+        pass
+
+    def evaluate_quality(self, df):
+        self.evaluate_stadistics(df=df)
+        self.evaluate_detection()
+
+    def evaluate_utility(self):
+        self.evaluate_efficiency()
+
     def evaluate_model(self):
         self.generate_data()
 
@@ -45,8 +81,10 @@ class Test:
         self.gen_data = self.gen_data.cpu()
 
         columns = self.val_loader.dataset.columns
-        df = pd.DataFrame(self.gen_data.numpy(), columns=columns)
-        df = df.round().astype(int)  # Redondear y luego convertir a enteros
+        self.df_gen_data = pd.DataFrame(self.gen_data.numpy(), columns=columns)
+        self.df_gen_data = self.df_gen_data.round().astype(
+            int
+        )  # Redondear y luego convertir a enteros
 
         # plot_statistics(df, f"./img/stadistics/gendata/standar/boxplot")
 
@@ -54,24 +92,14 @@ class Test:
         # prep.des_scale()
         # df = prep.df
 
-        plot_statistics(df, f"./img/stadistics/gendata/boxplot")
-
-        matrix_correlation(df, "gen")
+        plot_statistics(self.df_gen_data, f"./img/stadistics/gendata/boxplot")
 
         save_data(
             f"./results/gen_data/generated_data_{self.model}_{self.seed}_{time.time()}.csv",
-            df,
+            self.df_gen_data,
         )
-        df_test = pd.read_csv("data/cardio/split/cardio_test.csv", sep=";")
+        self.df_test = pd.read_csv("data/cardio/split/cardio_test.csv", sep=";")
 
-        ttsttr = TTSTTR(df, df_test, self.seed)
-        ttsttr.execute()
-        ttsr = TTSR(df, df_test, self.seed)
-        ttsr.execute()
-        tstr = TSTR(df, df_test, self.seed)
-        tstr.execute()
-        trts = TRTS(df_test, df, self.seed)
-        trts.execute()
-        
-        isolation_forest = IsolationForestDetection(self.test_loader, self.gen_data, self.seed)
-        isolation_forest.execute()
+        self.evaluate_utility()
+        self.evaluate_quality(self.df_gen_data)
+        self.evaluate_privacy()

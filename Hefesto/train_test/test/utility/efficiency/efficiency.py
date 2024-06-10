@@ -4,7 +4,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 
 
-class Utility:
+class Effiency:
+    """Clase para evaluar la eficiencia de un modelo de clasificación."""
     def __init__(self, file_name, seed, X=None, y=None):
         self.X = X
         self.y = y

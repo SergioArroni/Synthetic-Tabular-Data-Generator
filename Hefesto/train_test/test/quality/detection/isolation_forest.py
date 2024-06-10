@@ -1,9 +1,10 @@
 from sklearn.ensemble import IsolationForest
 
-from Hefesto.train_test.test.detection import Detection
+from Hefesto.train_test.test.quality.detection import Detection
 
 
 class IsolationForestDetection(Detection):
+    """Clase para detectar anomalías usando Isolation Forest."""
     def __init__(
         self,
         test_loader,

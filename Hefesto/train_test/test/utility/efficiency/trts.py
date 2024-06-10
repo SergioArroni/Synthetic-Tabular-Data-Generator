@@ -1,7 +1,8 @@
-from Hefesto.train_test.test.utility import Utility
+from Hefesto.train_test.test.utility.efficiency import Effiency
 
 
-class TRTS(Utility):
+class TRTS(Effiency):
+    """Clase para evaluar la eficiencia de un modelo usando TRTS."""
     def __init__(self, df, df_test, seed, file_name="./new_results/utility/TRTS.txt"):
         self.df = df
         self.df_test = df_test

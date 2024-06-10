@@ -1,7 +1,7 @@
-from Hefesto.train_test.test.utility import Utility
+from Hefesto.train_test.test.utility.efficiency import Effiency
 
 
-class TTSTTR(Utility):
+class TTS(Effiency):
     def __init__(self, df, df_test, seed, file_name="./new_results/utility/TTS_vs_TTR.txt"):
         self.df = df
         self.df_test = df_test
