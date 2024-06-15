@@ -50,7 +50,7 @@ class AEDetection(Detection):
         torch.manual_seed(self.seed)
 
         features = self.test_loader.dataset.features
-        features = torch.tensor(features, dtype=torch.float32).to(self.device)
+        features = features.clone().detach().to(self.device, dtype=torch.float32)
 
         criterion = nn.MSELoss()
         optimizer = optim.Adam(self.autoencoder.parameters(), lr=0.001)
@@ -84,7 +84,7 @@ class AEDetection(Detection):
     def predict(self):
         # Usamos el Autoencoder para detectar anomalías
         self.autoencoder.eval()
-        features = torch.tensor(self.gen_data, dtype=torch.float32).to(self.device)
+        features = self.gen_data.clone().detach().to(self.device, dtype=torch.float32)
 
         with torch.no_grad():
             predictions = self.autoencoder.forward(features)

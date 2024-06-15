@@ -6,7 +6,7 @@ from Hefesto.train_test.test.quality.stadistics import Stadistics
 
 
 class Tests(Stadistics):
-    """Clase para realizar pruebas estadísticas entre dos conjuntos de datos."""
+    """Class to perform statistical tests between two datasets."""
 
     def __init__(self, data, data2, path: str):
         super().__init__(data=data, path=path)
@@ -16,36 +16,46 @@ class Tests(Stadistics):
         self.kl_divergence = None
 
     def test_ks(self):
-        # Realizamos el test de Kolmogorov-Smirnov
+        """Perform the Kolmogorov-Smirnov test."""
         self.statistic, self.p_value = ks_2samp(self.data, self.data2)
 
     def test_kl(self, base=None):
-        # Calculamos la divergencia Kullback-Leibler
-        # Agregamos una pequeña cantidad a los datos para evitar problemas de log(0)
+        """Calculate the Kullback-Leibler divergence, ensuring no zero probabilities."""
         data_normalized = np.asarray(self.data, dtype=np.float64) + 1e-10
         data2_normalized = np.asarray(self.data2, dtype=np.float64) + 1e-10
 
+        # Normalize if they represent probabilities
+        data_normalized /= data_normalized.sum()
+        data2_normalized /= data2_normalized.sum()
+
+        # Verificar si los arrays pueden ser transmitidos
+        try:
+            np.broadcast_shapes(data_normalized.shape, data2_normalized.shape)
+        except ValueError as e:
+            print("Error de transmisión:", e)
+            # Redimensionar los arrays para hacerlos transmisibles, por ejemplo:
+            data_normalized = data_normalized.reshape(
+                -1, 1
+            )  # Ejemplo de redimensionamiento
+            data2_normalized = data2_normalized.reshape(
+                -1, 1
+            )  # Ejemplo de redimensionamiento
+
+        # Continuar con el cálculo de la entropía
         self.kl_divergence = entropy(data_normalized, data2_normalized, base=base)
 
     def write_tests(self):
-        with open(self.path, "w") as file:
-            file.write(f"KS statistic: {self.statistic}\n")
-            file.write(f"KS p-value: {self.p_value}\n")
-            file.write(f"KL divergence: {self.kl_divergence}\n")
-
-    def plot_density(self):
-        plt.figure(figsize=(10, 6))
-        sns.kdeplot(self.data, label="Data", color="blue", fill=True)
-        sns.kdeplot(self.data2, label="Data2", color="red", fill=True)
-        plt.title("Kernel Density Estimate")
-        plt.xlabel("Value")
-        plt.ylabel("Density")
-        plt.legend()
-        plt.savefig(f"{self.path}_density.png")
-        plt.close()
+        """Write test results to a file."""
+        try:
+            with open(self.path, "w") as file:
+                file.write(f"KS statistic: {self.statistic}\n")
+                file.write(f"KS p-value: {self.p_value}\n")
+                file.write(f"KL divergence: {self.kl_divergence}\n")
+        except IOError as e:
+            print(f"Error writing to file: {e}")
 
     def execute(self):
+        """Execute all tests and output handling."""
         self.test_ks()
         self.test_kl()
         self.write_tests()
-        self.plot_density()

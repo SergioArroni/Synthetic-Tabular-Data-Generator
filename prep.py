@@ -1,7 +1,6 @@
 import torch
 
 from Hefesto.preprocess.load_data import read_data, split_data
-from Hefesto.utils.utils import plot_statistics
 from Hefesto.preprocess.preprocess import Preprocess
 
 from sklearn.ensemble import RandomForestClassifier
@@ -19,9 +18,9 @@ def main():
     # plot_statistics(df, f"./img/stadistics/cardio/boxplot")
     # matrix_correlation(df, "all")
 
-    n = 20000
-    m = 20000
-    v = 5000
+    n = 100
+    m = 100
+    v = 100
 
     df_train, df_test, df_val = split_data(df, n, m, v)
     df_train.to_csv("data/cardio/split/cardio_train.csv", sep=";", index=False)

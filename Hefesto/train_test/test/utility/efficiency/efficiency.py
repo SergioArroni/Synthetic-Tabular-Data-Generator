@@ -1,4 +1,4 @@
-from sklearn.metrics import accuracy_score, f1_score
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, roc_auc_score
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
@@ -38,14 +38,24 @@ class Effiency:
 
         f1 = f1_score(self.y_test, predictions, average="weighted")
         accuracy = accuracy_score(self.y_test, predictions)
+        recall = recall_score(self.y_test, predictions, average="weighted")
+        precision = precision_score(self.y_test, predictions, average="weighted", zero_division=0)
+        if predictions.ndim != 1:
+            roc = roc_auc_score(self.y_test, predictions, average="weighted", multi_class='ovo')
+        else:
+            roc = "NaN"
 
-        self.result = (f1, accuracy)
+        self.result = (f1, accuracy, recall, precision, roc)
 
     def print_result(self):
         # Print the result in a file
         with open(self.path, "w") as f:
-            f.write("f1, accuracy\n")
-            f.write(f"{self.result[0]}, {self.result[1]}\n")
+            f.write(f"F1: {self.result[0]}\n")
+            f.write(f"Accuracy: {self.result[1]}\n")
+            f.write(f"Recall: {self.result[2]}\n")
+            f.write(f"Precision: {self.result[3]}\n")
+            f.write(f"ROC: {self.result[4]}\n")
+            
 
     def execute(self):
         self.process()

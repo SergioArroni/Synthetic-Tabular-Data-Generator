@@ -4,7 +4,7 @@ import torch
 from tqdm import tqdm
 from torch.utils.data import DataLoader
 from Hefesto.models.model import Model
-from Hefesto.utils import save_data, plot_statistics
+from Hefesto.utils import save_data
 from Hefesto.train_test.test.quality.detection import (
     IsolationForestDetection,
     LOFDetection,
@@ -52,34 +52,33 @@ class Test:
                 self.gen_data = torch.cat((self.gen_data, gen), 0)
 
     def evaluate_efficiency(self):
-        ttsttr = TTS(
+        TTS(
             df=self.df_gen_data,
             df_test=self.df_test,
             seed=self.seed,
             path="./final_results/utility/efficiency/TTS.txt",
-        )
-        ttsttr.execute()
-        ttsr = TTSR(
+        ).execute()
+
+        TTSR(
             df=self.df_gen_data,
             df_test=self.df_test,
             seed=self.seed,
             path="./final_results/utility/efficiency/TTSR.txt",
-        )
-        ttsr.execute()
-        tstr = TSTR(
+        ).execute()
+
+        TSTR(
             df=self.df_gen_data,
             df_test=self.df_test,
             seed=self.seed,
             path="./final_results/utility/efficiency/TSTR.txt",
-        )
-        tstr.execute()
-        trts = TRTS(
+        ).execute()
+
+        TRTS(
             df=self.df_gen_data,
             df_test=self.df_test,
             seed=self.seed,
             path="./final_results/utility/efficiency/TRTS.txt",
-        )
-        trts.execute()
+        ).execute()
 
     def evaluate_detection(self):
         IsolationForestDetection(
@@ -101,44 +100,45 @@ class Test:
             path="./final_results/quality/detection/ae.txt",
         ).execute()
 
-    def evaluate_stadistics(self, df: pd.DataFrame):
-        Correlation(df, "./final_results/quality/statistics/corr.png").execute()
-        Metrics(df, "./final_results/quality/statistics/metrics.txt").execute()
+    def evaluate_stadistics(self):
+        Metrics(
+            original_data=self.df_test,
+            synthetic_data=self.df_gen_data,
+            path="./final_results/quality/statistics/",
+        ).execute()
+        Correlation(
+            data=self.df_gen_data, path="./final_results/quality/statistics/corr.png"
+        ).execute()
         Tests(
             data=self.df_test,
-            data2=self.gen_data,
+            data2=self.df_gen_data,
             path="./final_results/quality/statistics/tests.txt",
         ).execute()
 
     def evaluate_privacy(self):
-        IdentityAttributeDisclosure(
-            data=self.df_test,
-            gen_data=self.gen_data,
-            path="./final_results/privacy/identity.txt",
-        ).execute()
-        DifferentialPrivacy(
-            data=self.df_test,
-            gen_data=self.gen_data,
-            path="./final_results/privacy/differential.txt",
-        ).execute()
         DCR(
             data=self.df_test,
-            gen_data=self.gen_data,
+            gen_data=self.df_gen_data,
             path="./final_results/privacy/dcr.txt",
-        ).execute()
-        MembershipInferenceAttack(
-            data=self.df_test,
-            gen_data=self.gen_data,
-            path="./final_results/privacy/membership.txt",
         ).execute()
         MMD(
             data=self.df_test,
-            gen_data=self.gen_data,
+            gen_data=self.df_gen_data,
             path="./final_results/privacy/mmd.txt",
         ).execute()
+        IdentityAttributeDisclosure(
+            data=self.df_test,
+            gen_data=self.df_gen_data,
+            path="./final_results/privacy/identity.txt",
+        ).execute()
+        MembershipInferenceAttack(
+            data=self.df_test,
+            gen_data=self.df_gen_data,
+            path="./final_results/privacy/membership.txt",
+        ).execute()
 
-    def evaluate_quality(self, df):
-        self.evaluate_stadistics(df=df)
+    def evaluate_quality(self):
+        self.evaluate_stadistics()
         self.evaluate_detection()
 
     def evaluate_utility(self):
@@ -156,13 +156,9 @@ class Test:
             int
         )  # Redondear y luego convertir a enteros
 
-        # plot_statistics(df, f"./img/stadistics/gendata/standar/boxplot")
-
         # prep = Preprocess(df)
         # prep.des_scale()
         # df = prep.df
-
-        plot_statistics(self.df_gen_data, f"./img/stadistics/gendata/boxplot")
 
         save_data(
             f"./final_results/data/generated_data_{self.model}_{self.seed}_{time.time()}.csv",
@@ -171,5 +167,5 @@ class Test:
         self.df_test = pd.read_csv("data/cardio/split/cardio_test.csv", sep=";")
 
         self.evaluate_utility()
-        self.evaluate_quality(self.df_gen_data)
+        self.evaluate_quality()
         self.evaluate_privacy()

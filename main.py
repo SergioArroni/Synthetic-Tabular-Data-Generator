@@ -9,7 +9,7 @@ from Hefesto.models.diffusion.diffusion import DiffusionModel
 from Hefesto.train_test import Test
 from Hefesto.train_test import Train
 from Hefesto.preprocess.load_data import do_data_loader, read_data, split_data
-from Hefesto.utils.utils import load_model, plot_statistics, save_model, write_results
+from Hefesto.utils.utils import load_model, save_model, write_results
 
 
 def main():
@@ -55,7 +55,7 @@ def main():
 
     if load:
         model = load_model(
-            "./save_models/model_DiffusionModel_1717059741.4930017.pt",
+            "./save_models/model_DiffusionModel_1718061653.3583972.pt",
             model,
         )
     else:

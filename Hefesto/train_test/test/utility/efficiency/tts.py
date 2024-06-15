@@ -13,10 +13,20 @@ class TTS(Effiency):
     def print_result(self):
         # Compare the two metrics in a file
         with open(self.path, "w") as f:
-            f.write("f1_gen, accuracy_gen, f1_test, accuracy_test\n")
-            f.write(
-                f"{self.metrics_gen[0]}, {self.metrics_gen[1]}, {self.metrics_test[0]}, {self.metrics_test[1]}\n"
-            )
+            f.write("Metrics for the generated data\n")
+            f.write(f"F1: {self.metrics_gen[0]}\n")
+            f.write(f"Accuracy: {self.metrics_gen[1]}\n")
+            f.write(f"Recall: {self.metrics_gen[2]}\n")
+            f.write(f"Precision: {self.metrics_gen[3]}\n")
+            f.write(f"ROC: {self.metrics_gen[4]}\n")
+            f.write("\n")
+            f.write("Metrics for the test data\n")
+            f.write(f"F1: {self.metrics_test[0]}\n")
+            f.write(f"Accuracy: {self.metrics_test[1]}\n")
+            f.write(f"Recall: {self.metrics_test[2]}\n")
+            f.write(f"Precision: {self.metrics_test[3]}\n")
+            f.write(f"ROC: {self.metrics_test[4]}\n")
+            
 
     def _exute_TTS(self):
         X = self.df.drop("cardio", axis=1)

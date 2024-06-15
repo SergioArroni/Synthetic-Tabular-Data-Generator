@@ -1,0 +1,19 @@
+median: 1.0
+variance: age            6.146026e+06
+gender         2.290619e-01
+height         6.784119e+01
+weight         2.007028e+02
+ap_hi          5.719123e+02
+ap_lo          3.781296e+04
+cholesterol    4.530908e-01
+gluc           3.200238e-01
+smoke          8.426959e-02
+alco           5.304156e-02
+active         1.563640e-01
+cardio         2.497110e-01
+dtype: float64
+mean: 1659.92973075
+mode: 19708.0
+25th_percentile: 1.0
+50th_percentile: 1.0
+75th_percentile: 103.25

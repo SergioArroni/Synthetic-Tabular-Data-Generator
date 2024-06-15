@@ -1,0 +1,13 @@
+Metrics for the generated data
+F1: 0.9308034297414896
+Accuracy: 0.9535
+Recall: 0.9535
+Precision: 0.90916225
+ROC: 0.5
+
+Metrics for the test data
+F1: 0.7094768200225559
+Accuracy: 0.71
+Recall: 0.71
+Precision: 0.7103243491697737
+ROC: 0.7089508251515355
