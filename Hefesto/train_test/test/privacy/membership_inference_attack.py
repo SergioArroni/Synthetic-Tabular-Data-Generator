@@ -13,10 +13,10 @@ class MembershipInferenceAttack(Privacy):
     def split_data(self, test_size=0.5):
         """Divide los datos en un conjunto de entrenamiento y un conjunto de prueba."""
         X_train, X_test, y_train, y_test = train_test_split(
-            self.data, np.ones(len(self.data)), test_size=test_size, random_state=42
+            self.data, np.ones(len(self.data)), test_size=test_size, random_state=self.seed
         )
         X_gen_train, X_gen_test, y_gen_train, y_gen_test = train_test_split(
-            self.gen_data, np.zeros(len(self.gen_data)), test_size=test_size, random_state=42
+            self.gen_data, np.zeros(len(self.gen_data)), test_size=test_size, random_state=self.seed
         )
 
         X_combined_train = np.concatenate((X_train, X_gen_train))
@@ -29,7 +29,7 @@ class MembershipInferenceAttack(Privacy):
 
     def train_attack_model(self, X_train, y_train):
         """Entrena el modelo de ataque."""
-        self.attack_model = RandomForestClassifier(n_estimators=100, random_state=42)
+        self.attack_model = RandomForestClassifier(n_estimators=100, random_state=self.seed)
         self.attack_model.fit(X_train, y_train)
 
     def evaluate_attack(self, X_test, y_test):

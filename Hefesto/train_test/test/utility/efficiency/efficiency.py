@@ -1,4 +1,10 @@
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, roc_auc_score
+from sklearn.metrics import (
+    accuracy_score,
+    f1_score,
+    precision_score,
+    recall_score,
+    roc_auc_score,
+)
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
@@ -19,6 +25,9 @@ class Effiency:
         self.y_test = None
 
     def process(self):
+        if self.y.dtype.kind in "f":  # Check if y is of float type
+            print("Converting float labels to integers for classification.")
+            self.y = self.y.astype(int)
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
             self.X, self.y, test_size=0.2, random_state=self.seed
         )
@@ -39,9 +48,13 @@ class Effiency:
         f1 = f1_score(self.y_test, predictions, average="weighted")
         accuracy = accuracy_score(self.y_test, predictions)
         recall = recall_score(self.y_test, predictions, average="weighted")
-        precision = precision_score(self.y_test, predictions, average="weighted", zero_division=0)
+        precision = precision_score(
+            self.y_test, predictions, average="weighted", zero_division=0
+        )
         if predictions.ndim != 1:
-            roc = roc_auc_score(self.y_test, predictions, average="weighted", multi_class='ovo')
+            roc = roc_auc_score(
+                self.y_test, predictions, average="weighted", multi_class="ovo"
+            )
         else:
             roc = "NaN"
 
@@ -55,7 +68,6 @@ class Effiency:
             f.write(f"Recall: {self.result[2]}\n")
             f.write(f"Precision: {self.result[3]}\n")
             f.write(f"ROC: {self.result[4]}\n")
-            
 
     def execute(self):
         self.process()

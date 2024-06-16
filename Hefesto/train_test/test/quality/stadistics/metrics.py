@@ -68,6 +68,7 @@ class Metrics(Stadistics):
                 fill=True,
                 label="Synthetic",
                 bw_adjust=2,
+                warn_singular=False,
             )
 
             # Calcular estadísticas descriptivas para ambos conjuntos de datos

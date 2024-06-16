@@ -10,6 +10,7 @@ from Hefesto.train_test.test.quality.detection import (
     LOFDetection,
     AEDetection,
 )
+from Hefesto.preprocess import PrepExe
 from Hefesto.train_test.test.utility.efficiency import TTS, TTSR, TSTR, TRTS
 from Hefesto.train_test.test.quality.stadistics import Correlation, Metrics, Tests
 from Hefesto.train_test.test.privacy import (
@@ -28,18 +29,22 @@ class Test:
         model: Model,
         test_loader: DataLoader,
         val_loader: DataLoader,
-        seed: int,
         device: torch.device,
+        preprocess: PrepExe,
+        seed: int = 42,
+        hard_prep: bool = False,
     ):
         self.model = model
         self.test_loader = test_loader
         self.val_loader = val_loader
         self.seed = seed
+        self.preprocess = preprocess
         self.device = device
         tam = self.val_loader.dataset.features.shape[1]
         self.gen_data = torch.empty(0, tam).to(self.device)
         self.df_test = None
         self.df_gen_data = None
+        self.hard_prep = hard_prep
 
     def generate_data(self):
 
@@ -147,19 +152,20 @@ class Test:
     def evaluate_model(self):
         self.generate_data()
 
-        # print(self.gen_data)
         self.gen_data = self.gen_data.cpu()
 
         columns = self.val_loader.dataset.columns
         self.df_gen_data = pd.DataFrame(self.gen_data.numpy(), columns=columns)
+        
+        if self.hard_prep:
+            self.preprocess.preprocess.des_transformar(self.df_gen_data)
+            self.df_gen_data = self.preprocess.preprocess.data_destransformer
+            self.df_gen_data = pd.DataFrame(self.gen_data.numpy(), columns=columns)
+
         self.df_gen_data = self.df_gen_data.round().astype(
             int
-        )  # Redondear y luego convertir a enteros
-
-        # prep = Preprocess(df)
-        # prep.des_scale()
-        # df = prep.df
-
+        )
+        
         save_data(
             f"./final_results/data/generated_data_{self.model}_{self.seed}_{time.time()}.csv",
             self.df_gen_data,

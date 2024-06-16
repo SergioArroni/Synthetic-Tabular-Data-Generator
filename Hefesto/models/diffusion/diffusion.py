@@ -3,6 +3,7 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader
 
+# from opacus import PrivacyEngine
 from Hefesto.models.model import Model
 from Hefesto.preprocess.load_data import do_data_loader
 
@@ -34,7 +35,7 @@ class DiffusionModel(Model):
             nn.Linear(input_dim, hidden_dim * 4),
             nn.LeakyReLU(),
             nn.Dropout(self.dropout),
-            nn.Linear(hidden_dim * 4, hidden_dim * 3),
+            nn.Linear(hidden_dim * 4, hidden_dim * 4),
             nn.LeakyReLU(),
             nn.Dropout(self.dropout),
             # nn.Linear(hidden_dim * 3, hidden_dim * 2),
@@ -42,30 +43,20 @@ class DiffusionModel(Model):
             # nn.Dropout(self.dropout),
         )
 
-        # self.mu_layer = nn.Linear(hidden_dim * 2, hidden_dim * 2)
-        # self.log_var_layer = nn.Linear(hidden_dim * 2, hidden_dim * 2)
-
         encoder_layers = nn.TransformerEncoderLayer(
-            d_model=hidden_dim * 3, nhead=4, dropout=self.dropout, batch_first=True
+            d_model=hidden_dim * 4, nhead=4, dropout=self.dropout, batch_first=True
         )
         self.transformer = nn.TransformerEncoder(encoder_layers, num_layers=4)
 
-        # decoder_layers = nn.TransformerDecoderLayer(
-        #     d_model=hidden_dim * 3, nhead=4, dropout=self.dropout, batch_first=True
-        # )
-        
-        # self.transformer_decoder = nn.TransformerDecoder(decoder_layers, num_layers=4)
-        
         self.decoder = nn.Sequential(
-            nn.Linear(hidden_dim * 3, hidden_dim * 3),
+            nn.Linear(hidden_dim * 4, hidden_dim * 3),
             nn.LeakyReLU(),
             nn.Dropout(self.dropout),
-            # nn.Linear(hidden_dim * 2, hidden_dim),
-            # nn.LeakyReLU(),
-            # nn.Dropout(self.dropout),
-            nn.Linear(hidden_dim * 3, input_dim),
+            nn.Linear(hidden_dim * 3, hidden_dim * 2),
+            nn.LeakyReLU(),
+            nn.Dropout(self.dropout),
+            nn.Linear(hidden_dim * 2, input_dim),
         )
-        
 
         self.apply(self._init_weights)
 
@@ -81,7 +72,7 @@ class DiffusionModel(Model):
         # mu = self.mu_layer(z)
         # log_var = torch.clamp(self.log_var_layer(z), min=-10, max=10)
         # z = self.reparameterize(mu, log_var)
-        # z = self.transformer(z)
+        z = self.transformer(z)
 
         for t in range(self.t_value):
             beta_t = self.betas[t]
@@ -100,14 +91,27 @@ class DiffusionModel(Model):
         # z = self.transformer(z).squeeze(1)
 
         x = self.decoder(z)
-        
+
         return x
 
     def train_model(self, model, input, optimizer, train=True) -> None:
+        # privacy_engine = PrivacyEngine()
 
         if train:
             model.train()
             optimizer.zero_grad()
+            # Asegúrate de que el PrivacyEngine está adjunto si estamos en entrenamiento
+            # model, optimizer = privacy_engine.make_private_with_epsilon(
+            #     module=model,
+            #     epochs=1,
+            #     optimizer=optimizer,
+            #     data_loader=input,  # Asegúrate de que input sea adecuado para esto
+            #     target_epsilon=1,
+            #     target_delta=(
+            #         1 / len(input)
+            #     ),  # 1/len(input),  # Asegúrate de que esto sea adecuado para tu caso TODO
+            #     max_grad_norm=1,
+            # )
         else:
             model.eval()
 

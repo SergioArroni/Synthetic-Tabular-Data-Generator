@@ -1,0 +1,3 @@
+Good elements: 9539
+Bad elements: 461
+Percentage of good elements: 95.39

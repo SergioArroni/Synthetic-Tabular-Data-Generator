@@ -1,0 +1,3 @@
+Good elements: 0
+Bad elements: 500
+Percentage of good elements: 0.0
