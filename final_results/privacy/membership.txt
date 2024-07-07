@@ -1,1 +1,1 @@
-Membership Inference Attack Accuracy: 0.9986
+Membership Inference Attack Accuracy: 1.0

@@ -1,5 +1,0 @@
-F1: 0.4280778588807786
-Accuracy: 0.51
-Recall: 0.51
-Precision: 0.5425
-ROC: NaN

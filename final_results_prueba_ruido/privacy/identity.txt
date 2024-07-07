@@ -1,2 +1,0 @@
-Attribute Disclosure Rate: 1.0
-Identity Disclosure Rate: 0.0

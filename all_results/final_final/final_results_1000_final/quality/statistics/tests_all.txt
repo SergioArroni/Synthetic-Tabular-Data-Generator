@@ -1,0 +1,3 @@
+KS statistic: 0.26069999999999993
+KS p-value: 0.0
+KL divergence: 7.350445049983034

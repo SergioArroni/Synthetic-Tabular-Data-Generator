@@ -13,7 +13,12 @@ from Hefesto.utils.utils import save_model
 class Train:
 
     def __init__(
-        self, model: Model, device: torch.device, timestamp: float, epochs: int
+        self,
+        model: Model,
+        device: torch.device,
+        timestamp: float,
+        epochs: int,
+        patience: int = 10,
     ) -> None:
         self.model = model
         self.device = device
@@ -22,9 +27,14 @@ class Train:
         self.train_losses = []
         self.val_losses = []
         self.epochs = epochs
+        self.patience = (
+            patience  # Número de épocas para esperar después de la última mejora.
+        )
 
     def train_model(self, train_loader, val_loader) -> None:
-
+        best_loss = float("inf")
+        epochs_no_improve = 0
+        x = 100  # Threshold for early stopping
         optimizer = optim.Adam(self.model.parameters(), lr=0.001)
 
         for epoch in range(self.epochs):
@@ -49,6 +59,16 @@ class Train:
             )
             self.train_losses.append(avg_train_loss)
             self.val_losses.append(avg_val_loss)
+            
+            # Early stopping
+            # if avg_val_loss - avg_train_loss > x:
+            #     epochs_no_improve += 1
+            #     if epochs_no_improve == self.patience:
+            #         print("Early stopping!")
+            #         break
+            # else:
+            #     epochs_no_improve = 0
+        
         self.plotting()
 
     def plotting(self) -> None:

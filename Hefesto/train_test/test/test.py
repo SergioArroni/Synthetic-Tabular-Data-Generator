@@ -87,22 +87,16 @@ class Test:
 
     def evaluate_detection(self):
         IsolationForestDetection(
-            test_loader=self.test_loader,
-            gen_data=self.gen_data,
+            original_data=self.test_loader,
+            synthetic_data=self.gen_data,
             seed=self.seed,
             path="./final_results/quality/detection/isolation.txt",
         ).execute()
         LOFDetection(
-            test_loader=self.test_loader,
-            gen_data=self.gen_data,
+            original_data=self.test_loader,
+            synthetic_data=self.gen_data,
             seed=self.seed,
             path="./final_results/quality/detection/lof.txt",
-        ).execute()
-        AEDetection(
-            test_loader=self.test_loader,
-            gen_data=self.gen_data,
-            seed=self.seed,
-            path="./final_results/quality/detection/ae.txt",
         ).execute()
 
     def evaluate_stadistics(self):
@@ -112,12 +106,21 @@ class Test:
             path="./final_results/quality/statistics/",
         ).execute()
         Correlation(
-            data=self.df_gen_data, path="./final_results/quality/statistics/corr.png"
+            original_data=self.df_test,
+            synthetic_data=self.df_gen_data,
+            path="./final_results/quality/statistics/corr",
         ).execute()
         Tests(
-            data=self.df_test,
-            data2=self.df_gen_data,
+            original_data=self.df_test,
+            synthetic_data=self.df_gen_data,
             path="./final_results/quality/statistics/tests.txt",
+            all_data=False,
+        ).execute()
+        Tests(
+            original_data=self.df_test,
+            synthetic_data=self.df_gen_data,
+            path="./final_results/quality/statistics/tests_all.txt",
+            all_data=True,
         ).execute()
 
     def evaluate_privacy(self):
@@ -126,16 +129,6 @@ class Test:
             gen_data=self.df_gen_data,
             path="./final_results/privacy/dcr.txt",
         ).execute()
-        MMD(
-            data=self.df_test,
-            gen_data=self.df_gen_data,
-            path="./final_results/privacy/mmd.txt",
-        ).execute()
-        IdentityAttributeDisclosure(
-            data=self.df_test,
-            gen_data=self.df_gen_data,
-            path="./final_results/privacy/identity.txt",
-        ).execute()
         MembershipInferenceAttack(
             data=self.df_test,
             gen_data=self.df_gen_data,
@@ -143,8 +136,8 @@ class Test:
         ).execute()
 
     def evaluate_quality(self):
-        self.evaluate_stadistics()
         self.evaluate_detection()
+        self.evaluate_stadistics()
 
     def evaluate_utility(self):
         self.evaluate_efficiency()
@@ -156,22 +149,20 @@ class Test:
 
         columns = self.val_loader.dataset.columns
         self.df_gen_data = pd.DataFrame(self.gen_data.numpy(), columns=columns)
-        
+
         if self.hard_prep:
             self.preprocess.preprocess.des_transformar(self.df_gen_data)
             self.df_gen_data = self.preprocess.preprocess.data_destransformer
             self.df_gen_data = pd.DataFrame(self.gen_data.numpy(), columns=columns)
 
-        self.df_gen_data = self.df_gen_data.round().astype(
-            int
-        )
-        
+        self.df_gen_data = self.df_gen_data.round().astype(int)
+
         save_data(
             f"./final_results/data/generated_data_{self.model}_{self.seed}_{time.time()}.csv",
             self.df_gen_data,
         )
         self.df_test = pd.read_csv("data/cardio/split/cardio_test.csv", sep=";")
 
-        self.evaluate_utility()
         self.evaluate_quality()
         self.evaluate_privacy()
+        self.evaluate_utility()

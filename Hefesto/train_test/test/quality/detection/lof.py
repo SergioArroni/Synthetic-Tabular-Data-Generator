@@ -8,16 +8,20 @@ class LOFDetection(Detection):
 
     def __init__(
         self,
-        test_loader,
-        gen_data,
+        original_data,
+        synthetic_data,
         seed,
         path,
     ):
-        super().__init__(gen_data=gen_data, seed=seed, path=path)
-        self.test_loader = test_loader
+        super().__init__(
+            original_data=original_data,
+            synthetic_data=synthetic_data,
+            seed=seed,
+            path=path,
+        )
 
     def detection_model(self):
         # Usamos LocalOutlierFactor para detectar outliers
-        lof = LocalOutlierFactor(novelty=True, n_neighbors=20)
-        lof.fit(self.test_loader.dataset.features)
+        lof = LocalOutlierFactor(novelty=True)
+        lof.fit(self.original_data.dataset.features)
         return lof

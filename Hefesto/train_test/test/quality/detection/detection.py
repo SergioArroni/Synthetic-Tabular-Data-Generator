@@ -1,8 +1,13 @@
+from sklearn.preprocessing import StandardScaler
+import pandas as pd
+
+
 class Detection:
     """Clase base para detectar anomalías."""
 
-    def __init__(self, gen_data, seed, path):
-        self.gen_data = gen_data
+    def __init__(self, original_data, synthetic_data, seed, path):
+        self.synthetic_data = synthetic_data
+        self.original_data = original_data
         self.seed = seed
         self.good_ele = []
         self.bad_ele = []
@@ -13,7 +18,7 @@ class Detection:
         raise NotImplementedError
 
     def predict(self):
-        for ele in self.gen_data:
+        for ele in self.synthetic_data:
             ele = ele.cpu()
             if self.model.predict([ele]) == 1:
                 self.good_ele.append(ele)
@@ -26,7 +31,7 @@ class Detection:
             file.write(f"Good elements: {len(self.good_ele)}\n")
             file.write(f"Bad elements: {len(self.bad_ele)}\n")
             file.write(
-                f"Percentage of good elements: {len(self.good_ele) / len(self.gen_data) * 100}\n"
+                f"Percentage of good elements: {len(self.good_ele) / len(self.synthetic_data) * 100}\n"
             )
 
     def execute(self):

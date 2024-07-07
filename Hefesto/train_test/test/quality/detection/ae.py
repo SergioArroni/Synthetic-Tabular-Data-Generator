@@ -4,6 +4,7 @@ import torch.optim as optim
 import numpy as np
 from Hefesto.train_test.test.quality.detection import Detection
 
+
 class _Autoencoder(nn.Module):
     """Autoencoder simple para detectar anomalías."""
 
@@ -21,23 +22,21 @@ class _Autoencoder(nn.Module):
         decoded = self.decoder(encoded)
         return decoded
 
+
 class AEDetection(Detection):
     """Clase para detectar anomalías usando un Autoencoder."""
 
-    def __init__(
-        self,
-        test_loader,
-        gen_data,
-        seed,
-        path,
-        threshold=None
-    ):
-        super().__init__(gen_data=gen_data, seed=seed, path=path)
-        self.test_loader = test_loader
+    def __init__(self, original_data, synthetic_data, seed, path, threshold=None):
+        super().__init__(
+            original_data=original_data,
+            synthetic_data=synthetic_data,
+            seed=seed,
+            path=path,
+        )
         self.seed = seed
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.autoencoder = self.build_autoencoder(
-            input_dim=test_loader.dataset.features.shape[1]
+            input_dim=original_data.dataset.features.shape[1]
         ).to(self.device)
         self.threshold = threshold
 
@@ -49,7 +48,7 @@ class AEDetection(Detection):
         np.random.seed(self.seed)
         torch.manual_seed(self.seed)
 
-        features = self.test_loader.dataset.features
+        features = self.original_data.dataset.features
         features = features.clone().detach().to(self.device, dtype=torch.float32)
 
         criterion = nn.MSELoss()
@@ -75,16 +74,22 @@ class AEDetection(Detection):
         self.autoencoder.eval()
         with torch.no_grad():
             reconstruction = self.autoencoder.forward(features)
-        reconstruction_errors = torch.mean((features - reconstruction) ** 2, dim=1).cpu().numpy()
+        reconstruction_errors = (
+            torch.mean((features - reconstruction) ** 2, dim=1).cpu().numpy()
+        )
         if self.threshold is None:
-            self.threshold = np.percentile(reconstruction_errors, 95)  # Set threshold at the 95th percentile
+            self.threshold = np.percentile(
+                reconstruction_errors, 95
+            )  # Set threshold at the 95th percentile
 
         return self.autoencoder
-    
+
     def predict(self):
         # Usamos el Autoencoder para detectar anomalías
         self.autoencoder.eval()
-        features = self.gen_data.clone().detach().to(self.device, dtype=torch.float32)
+        features = (
+            self.synthetic_data.clone().detach().to(self.device, dtype=torch.float32)
+        )
 
         with torch.no_grad():
             predictions = self.autoencoder.forward(features)
@@ -95,6 +100,6 @@ class AEDetection(Detection):
         reconstruction_errors = np.mean(np.power(features - predictions, 2), axis=1)
         for idx, error in enumerate(reconstruction_errors):
             if error > self.threshold:
-                self.bad_ele.append(self.gen_data[idx])
+                self.bad_ele.append(self.synthetic_data[idx])
             else:
-                self.good_ele.append(self.gen_data[idx])
+                self.good_ele.append(self.synthetic_data[idx])

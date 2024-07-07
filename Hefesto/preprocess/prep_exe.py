@@ -34,12 +34,11 @@ class PrepExe:
     def prep_exe(self):
         torch.cuda.set_device(self.device)
 
-        self.preprocess.quantile_transform()
         if self.hard_prep:
-            self.df = pd.DataFrame(self.preprocess.transformed_data, columns=self.df.columns)
-        
-        # plot_statistics(df, f"./img/stadistics/cardio/boxplot")
-        # matrix_correlation(df, "all")
+            self.preprocess.quantile_transform()
+            self.df = pd.DataFrame(
+                self.preprocess.transformed_data, columns=self.df.columns
+            )
 
         n = self.cant_train
         m = self.cant_test
@@ -54,36 +53,3 @@ class PrepExe:
 
         X = df_val.drop("cardio", axis=1)
         y = df_val["cardio"]
-
-        # metrics = self.evaluate_regression(X, y)
-
-        # a = open("results/metrics.txt", "w")
-        # a.write(f"F1: {metrics[0]}\n")
-        # a.write(f"Accuracy: {metrics[1]}\n")
-        # a.close()
-
-    def evaluate_regression(self, X, y):
-        """
-        Evalúa el desempeño de un modelo de regresión sobre los datos generados.
-        """
-        # Dividir los datos
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=0.2, random_state=self.seed
-        )
-
-        # Escalar los datos
-        scaler = StandardScaler()
-        X_train = scaler.fit_transform(X_train)
-        X_test = scaler.transform(X_test)
-
-        # Entrenar el modelo
-        model = RandomForestClassifier(random_state=self.seed)
-        model.fit(X_train, y_train)
-
-        # Evaluar el modelo
-        predictions = model.predict(X_test)
-
-        f1 = f1_score(y_test, predictions)
-        accuracy = accuracy_score(y_test, predictions)
-
-        return (f1, accuracy)

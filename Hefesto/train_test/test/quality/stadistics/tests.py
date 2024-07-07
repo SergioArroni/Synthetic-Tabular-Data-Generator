@@ -1,48 +1,66 @@
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-from scipy.stats import ks_2samp, entropy
+from scipy.stats import entropy, ks_2samp
 from Hefesto.train_test.test.quality.stadistics import Stadistics
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
 
 
 class Tests(Stadistics):
     """Class to perform statistical tests between two datasets."""
 
-    def __init__(self, data, data2, path: str):
-        super().__init__(data=data, path=path)
-        self.data2 = data2
+    def __init__(self, original_data, synthetic_data, path: str, all_data: bool):
+        super().__init__(
+            original_data=original_data, synthetic_data=synthetic_data, path=path
+        )
         self.statistic = None
         self.p_value = None
         self.kl_divergence = None
+        self.all_data = all_data
 
     def test_ks(self):
         """Perform the Kolmogorov-Smirnov test."""
-        self.statistic, self.p_value = ks_2samp(self.data, self.data2)
+        if self.all_data:
+            self.statistic, self.p_value = ks_2samp(
+                self.original_data.values.flatten(),
+                self.synthetic_data.values.flatten(),
+            )
+        else:
+            self.statistic, self.p_value = ks_2samp(
+                self.original_data, self.synthetic_data
+            )
+
+    def obtener_histogramas_normalizados(self, datos, num_bins=50):
+        histogramas = {}
+        for columna in datos.columns:
+            hist, bin_edges = np.histogram(datos[columna], bins=num_bins, density=True)
+            hist += 1e-10  # Añadir un valor pequeño para evitar ceros
+            histogramas[columna] = hist
+        return histogramas
 
     def test_kl(self, base=None):
-        """Calculate the Kullback-Leibler divergence, ensuring no zero probabilities."""
-        data_normalized = np.asarray(self.data, dtype=np.float64) + 1e-10
-        data2_normalized = np.asarray(self.data2, dtype=np.float64) + 1e-10
+        """Calculate the KL divergence for the entire dataset."""
+        if self.all_data:
+            histogramas_orig = self.obtener_histogramas_normalizados(self.original_data)
+            histogramas_sint = self.obtener_histogramas_normalizados(
+                self.synthetic_data
+            )
 
-        # Normalize if they represent probabilities
-        data_normalized /= data_normalized.sum()
-        data2_normalized /= data2_normalized.sum()
+            kl_divergencias = []
+            for columna in histogramas_orig.keys():
+                kl_div = entropy(histogramas_orig[columna], histogramas_sint[columna])
+                kl_divergencias.append(kl_div)
 
-        # Verificar si los arrays pueden ser transmitidos
-        try:
-            np.broadcast_shapes(data_normalized.shape, data2_normalized.shape)
-        except ValueError as e:
-            print("Error de transmisión:", e)
-            # Redimensionar los arrays para hacerlos transmisibles, por ejemplo:
-            data_normalized = data_normalized.reshape(
-                -1, 1
-            )  # Ejemplo de redimensionamiento
-            data2_normalized = data2_normalized.reshape(
-                -1, 1
-            )  # Ejemplo de redimensionamiento
-
-        # Continuar con el cálculo de la entropía
-        self.kl_divergence = entropy(data_normalized, data2_normalized, base=base)
+            self.kl_divergence = np.mean(kl_divergencias)
+        else:
+            histogramas_orig = self.obtener_histogramas_normalizados(self.original_data)
+            histogramas_sint = self.obtener_histogramas_normalizados(
+                self.synthetic_data
+            )
+            kl_divergencias = []
+            for columna in histogramas_orig.keys():
+                kl_div = entropy(histogramas_orig[columna], histogramas_sint[columna])
+                kl_divergencias.append(kl_div)
+            self.kl_divergence = kl_divergencias
 
     def write_tests(self):
         """Write test results to a file."""
@@ -54,8 +72,25 @@ class Tests(Stadistics):
         except IOError as e:
             print(f"Error writing to file: {e}")
 
+    def standardize_data(self):
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
+        # Standardize data
+        self.original_data = pd.DataFrame(
+            StandardScaler().fit_transform(self.original_data),
+            columns=self.original_data.columns,
+        )
+        self.synthetic_data = pd.DataFrame(
+            StandardScaler().fit_transform(self.synthetic_data),
+            columns=self.synthetic_data.columns,
+        )
+
     def execute(self):
         """Execute all tests and output handling."""
+        self.standardize_data()
         self.test_ks()
         self.test_kl()
         self.write_tests()

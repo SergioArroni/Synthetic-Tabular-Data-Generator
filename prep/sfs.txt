@@ -1,0 +1,1 @@
+(0, 'age')	(1, 'height')	(2, 'weight')	(3, 'ap_hi')	(4, 'ap_lo')	(5, 'cholesterol')	(6, 'gluc')	(7, 'smoke')	(8, 'alco')	(9, 'active')	

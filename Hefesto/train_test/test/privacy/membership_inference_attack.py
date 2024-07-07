@@ -2,7 +2,11 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.ensemble import RandomForestClassifier
+from sklearn import tree
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
 from Hefesto.train_test.test.privacy import Privacy
+
 
 class MembershipInferenceAttack(Privacy):
     def __init__(self, data, gen_data, path: str):
@@ -12,11 +16,18 @@ class MembershipInferenceAttack(Privacy):
 
     def split_data(self, test_size=0.5):
         """Divide los datos en un conjunto de entrenamiento y un conjunto de prueba."""
+        # self.data += np.random.normal(size=self.data.shape) * 0.01
         X_train, X_test, y_train, y_test = train_test_split(
-            self.data, np.ones(len(self.data)), test_size=test_size, random_state=self.seed
+            self.data,
+            np.ones(len(self.data)),
+            test_size=test_size,
+            random_state=self.seed - 1,
         )
         X_gen_train, X_gen_test, y_gen_train, y_gen_test = train_test_split(
-            self.gen_data, np.zeros(len(self.gen_data)), test_size=test_size, random_state=self.seed
+            self.gen_data,
+            np.zeros(len(self.gen_data)),
+            test_size=test_size,
+            random_state=self.seed + 1,
         )
 
         X_combined_train = np.concatenate((X_train, X_gen_train))
@@ -29,7 +40,7 @@ class MembershipInferenceAttack(Privacy):
 
     def train_attack_model(self, X_train, y_train):
         """Entrena el modelo de ataque."""
-        self.attack_model = RandomForestClassifier(n_estimators=100, random_state=self.seed)
+        self.attack_model = LogisticRegression()
         self.attack_model.fit(X_train, y_train)
 
     def evaluate_attack(self, X_test, y_test):
@@ -52,4 +63,3 @@ class MembershipInferenceAttack(Privacy):
     def execute(self):
         self.execute_attack()
         self.write_results()
-
