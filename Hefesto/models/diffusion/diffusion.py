@@ -1,10 +1,7 @@
-import pandas as pd
 import torch
 from torch import nn
-from torch.utils.data import DataLoader
 
 from Hefesto.models.model import Model
-from Hefesto.preprocess.load_data import do_data_loader
 
 
 class DiffusionModel(Model):

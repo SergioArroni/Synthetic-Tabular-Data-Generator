@@ -160,10 +160,8 @@ cython_debug/
 #.idea/
 
 
-data/cardio/*.csv
 data/cardio/*.zip
 data/cardio/split/*.zip
-
 save_models/*
 scaler/*
 catboost_info/*

@@ -18,7 +18,6 @@ def main():
     random.seed(seed)
     np.random.seed(seed)
     prep = True
-    hard_prep = False
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print(device)
@@ -27,12 +26,7 @@ def main():
     prep_exe = None
     if prep:
         prep_exe = PrepExe(
-            device=device,
-            seed=seed,
-            cant_train=20000,
-            cant_test=20000,
-            cant_val=20000,
-            hard_prep=hard_prep,
+            device=device, seed=seed, cant_train=20000, cant_test=20000, cant_val=20000
         )
         prep_exe.prep_exe()
 
@@ -78,7 +72,6 @@ def main():
 
     if load:
         model = load_model(
-            
             "./save_models/model_DiffusionModel_1719511544.8437448.pt",
             model,
         )

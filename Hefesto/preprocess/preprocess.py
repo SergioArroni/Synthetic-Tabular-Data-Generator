@@ -81,14 +81,12 @@ class Preprocess:
         plt.ylabel("Frequency")
 
         plt.tight_layout()
-        plt.savefig("./final_results/data/prep/quantile_transform.png")
+        plt.savefig("./final_results_tmp/data/prep/quantile_transform.png")
 
     def des_transformar(self, generated_data):
         # De-transformar las predicciones
         generated_data = generated_data.to_numpy().reshape(-1, 1)
         generated_data = pd.DataFrame(generated_data, columns=self.df.columns)
         print(generated_data)
-        self.data_destransformer = self.qt.inverse_transform(
-            generated_data
-        )
+        self.data_destransformer = self.qt.inverse_transform(generated_data)
         print(self.data_destransformer)

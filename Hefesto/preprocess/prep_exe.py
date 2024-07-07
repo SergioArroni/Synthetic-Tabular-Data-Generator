@@ -16,7 +16,6 @@ class PrepExe:
         cant_train: int,
         cant_test: int,
         cant_val: int,
-        hard_prep: bool = False,
         seed: int = 42,
         path_train: str = "data/cardio/cardio_train.csv",
     ):
@@ -29,7 +28,6 @@ class PrepExe:
         self.cant_train = cant_train
         self.cant_test = cant_test
         self.cant_val = cant_val
-        self.hard_prep = hard_prep
 
     def prep_exe(self):
         torch.cuda.set_device(self.device)

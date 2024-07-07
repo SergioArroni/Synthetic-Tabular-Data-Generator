@@ -61,28 +61,28 @@ class Test:
             df=self.df_gen_data,
             df_test=self.df_test,
             seed=self.seed,
-            path="./final_results/utility/efficiency/TTS.txt",
+            path="./final_results_tmp/utility/efficiency/TTS.txt",
         ).execute()
 
         TTSR(
             df=self.df_gen_data,
             df_test=self.df_test,
             seed=self.seed,
-            path="./final_results/utility/efficiency/TTSR.txt",
+            path="./final_results_tmp/utility/efficiency/TTSR.txt",
         ).execute()
 
         TSTR(
             df=self.df_gen_data,
             df_test=self.df_test,
             seed=self.seed,
-            path="./final_results/utility/efficiency/TSTR.txt",
+            path="./final_results_tmp/utility/efficiency/TSTR.txt",
         ).execute()
 
         TRTS(
             df=self.df_gen_data,
             df_test=self.df_test,
             seed=self.seed,
-            path="./final_results/utility/efficiency/TRTS.txt",
+            path="./final_results_tmp/utility/efficiency/TRTS.txt",
         ).execute()
 
     def evaluate_detection(self):
@@ -90,36 +90,36 @@ class Test:
             original_data=self.test_loader,
             synthetic_data=self.gen_data,
             seed=self.seed,
-            path="./final_results/quality/detection/isolation.txt",
+            path="./final_results_tmp/quality/detection/isolation.txt",
         ).execute()
         LOFDetection(
             original_data=self.test_loader,
             synthetic_data=self.gen_data,
             seed=self.seed,
-            path="./final_results/quality/detection/lof.txt",
+            path="./final_results_tmp/quality/detection/lof.txt",
         ).execute()
 
     def evaluate_stadistics(self):
         Metrics(
             original_data=self.df_test,
             synthetic_data=self.df_gen_data,
-            path="./final_results/quality/statistics/",
+            path="./final_results_tmp/quality/statistics/",
         ).execute()
         Correlation(
             original_data=self.df_test,
             synthetic_data=self.df_gen_data,
-            path="./final_results/quality/statistics/corr",
+            path="./final_results_tmp/quality/statistics/corr",
         ).execute()
         Tests(
             original_data=self.df_test,
             synthetic_data=self.df_gen_data,
-            path="./final_results/quality/statistics/tests.txt",
+            path="./final_results_tmp/quality/statistics/tests.txt",
             all_data=False,
         ).execute()
         Tests(
             original_data=self.df_test,
             synthetic_data=self.df_gen_data,
-            path="./final_results/quality/statistics/tests_all.txt",
+            path="./final_results_tmp/quality/statistics/tests_all.txt",
             all_data=True,
         ).execute()
 
@@ -127,12 +127,12 @@ class Test:
         DCR(
             data=self.df_test,
             gen_data=self.df_gen_data,
-            path="./final_results/privacy/dcr.txt",
+            path="./final_results_tmp/privacy/dcr.txt",
         ).execute()
         MembershipInferenceAttack(
             data=self.df_test,
             gen_data=self.df_gen_data,
-            path="./final_results/privacy/membership.txt",
+            path="./final_results_tmp/privacy/membership.txt",
         ).execute()
 
     def evaluate_quality(self):
@@ -158,7 +158,7 @@ class Test:
         self.df_gen_data = self.df_gen_data.round().astype(int)
 
         save_data(
-            f"./final_results/data/generated_data_{self.model}_{self.seed}_{time.time()}.csv",
+            f"./final_results_tmp/data/generated_data_{self.model}_{self.seed}_{time.time()}.csv",
             self.df_gen_data,
         )
         self.df_test = pd.read_csv("data/cardio/split/cardio_test.csv", sep=";")
