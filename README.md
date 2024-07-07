@@ -23,7 +23,7 @@ This repository contains the code and data used for a research project by Sergio
 1. **Clone the repository**:
 
    ```bash
-   git clone https://github.com/SergioArroni/TFM.git
+   git clone https://github.com/SergioArroni/Synthetic-Tabular-Data-Generator.git
    cd TFM
    ```
 
@@ -127,4 +127,4 @@ Sergio Arroni - [sergioArroni@outlook.com](sergioArroni@outlook.com)
 
 ## Resources
 
-- More details can be found in the [official repository](https://github.com/SergioArroni/TFM).
+- More details can be found in the [official repository](https://github.com/SergioArroni/Synthetic-Tabular-Data-Generator).
