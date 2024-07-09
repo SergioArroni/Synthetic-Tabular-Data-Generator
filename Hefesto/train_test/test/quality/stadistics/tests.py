@@ -67,7 +67,6 @@ class Tests(Stadistics):
         try:
             with open(self.path, "w") as file:
                 file.write(f"KS statistic: {self.statistic}\n")
-                file.write(f"KS p-value: {self.p_value}\n")
                 file.write(f"KL divergence: {self.kl_divergence}\n")
         except IOError as e:
             print(f"Error writing to file: {e}")
